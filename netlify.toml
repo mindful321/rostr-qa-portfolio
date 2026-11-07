@@ -8,11 +8,7 @@
 [functions]
   node_bundler = "esbuild"
 
-# Pretty API paths: /api/v1/<name> -> function <name>
-[[redirects]]
-  from = "/api/v1/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+# API routes come from each function's `config.path` (e.g. /api/v1/shifts).
 
 [[headers]]
   for = "/*"
