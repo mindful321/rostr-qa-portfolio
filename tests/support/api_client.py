@@ -28,8 +28,9 @@ class RostrApi:
         return self.get("/auth/me")
 
     # --- features ----------------------------------------------------------------------------
-    def schedule(self, tz: str = "America/Edmonton") -> requests.Response:
-        return self.get("/shifts", params={"tz": tz})
+    def schedule(self, tz: str | None = None) -> requests.Response:
+        """tz=None uses the server default (America/Edmonton)."""
+        return self.get("/shifts", params={"tz": tz} if tz else None)
 
     def add_shift(self, employee_id: str, day: int, start: str, end: str) -> requests.Response:
         return self.post("/shifts", {"employeeId": employee_id, "day": day, "start": start, "end": end})

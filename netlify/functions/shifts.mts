@@ -1,16 +1,24 @@
-// GET  /api/v1/shifts?tz=America/Edmonton  -> the demo week's schedule
+// GET  /api/v1/shifts[?tz=America/Edmonton]  -> the demo week's schedule
 // POST /api/v1/shifts { employeeId, day, start, end } -> 201 | 400 | 409 (overlap)
 import { EMPLOYEES, TIME_ZONE } from "../lib/seed.ts";
 import { error, json, methodNotAllowed, readJson, withSession } from "../lib/http.ts";
 import { isValidTime, overlaps, toMinutes } from "../lib/logic.ts";
 import { allShifts, scheduleView } from "../lib/views.ts";
+import { isBugMode } from "../lib/bugs.ts";
 
 export default async (req: Request): Promise<Response> =>
   withSession(req, async (state) => {
+    const bug = isBugMode(req);
+
     if (req.method === "GET") {
-      const tz = new URL(req.url).searchParams.get("tz") ?? TIME_ZONE;
+      const requestedTz = new URL(req.url).searchParams.get("tz");
+      // PLANTED BUG-08: in bug mode, explicitly asking for the Edmonton time zone crashes the endpoint.
+      if (bug && requestedTz === TIME_ZONE) {
+        return error(500, "server_error", "RangeError: Invalid time zone specified: America/Edmonton");
+      }
+      const tz = requestedTz ?? TIME_ZONE;
       if (tz !== TIME_ZONE) return error(400, "unsupported_time_zone", `Only ${TIME_ZONE} is supported.`);
-      return json(scheduleView(state));
+      return json(scheduleView(state, bug));
     }
 
     if (req.method === "POST") {
@@ -25,7 +33,8 @@ export default async (req: Request): Promise<Response> =>
       if (toMinutes(end) <= toMinutes(start)) return error(400, "invalid_range", "End must be after start.");
 
       const clash = allShifts(state).find((s) => s.employeeId === employeeId && s.day === day && overlaps(s, { start, end }));
-      if (clash) {
+      // PLANTED BUG-03: in bug mode, the overlap check is skipped and the clashing shift is saved.
+      if (clash && !bug) {
         return error(409, "shift_overlap", `Overlaps an existing shift ${clash.start}–${clash.end}.`);
       }
 

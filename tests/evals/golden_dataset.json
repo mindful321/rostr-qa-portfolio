@@ -7,7 +7,7 @@
       "question": "Who works Wednesday?",
       "intent": "schedule",
       "must_include": ["Maria L. (09:00–17:00)", "Dev P. (12:00–20:00)", "Aisha K. (08:00–16:00)"],
-      "must_not_include": ["$"],
+      "must_not_include": ["$", "Sam"],
       "check": "correctness, no hallucination"
     },
     {
