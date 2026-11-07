@@ -1,5 +1,5 @@
 // Unit tests for Rostr's business rules (netlify/lib/logic.ts), run with Node's built-in test runner:
-//   node --test tests/unit/
+//   node --test "tests/unit/*.test.ts"
 // These are written in TypeScript because the app is: unit tests live next to the code's language.
 import { test } from "node:test";
 import assert from "node:assert/strict";

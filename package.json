@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
     "netlify:dev": "npx netlify-cli dev",
-    "test:unit": "node --test tests/unit/"
+    "test:unit": "node --test \"tests/unit/*.test.ts\""
   },
   "devDependencies": {
     "typescript": "^5.6.0"
