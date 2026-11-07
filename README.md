@@ -7,7 +7,7 @@ Live site: https://nataliakrasnova.netlify.app (coming soon)
 ## Status
 
 - [x] Home page
-- [ ] Rostr app (clean)
+- [x] Rostr app (clean): login, schedule, time off, timesheet, Ask Rostr
 - [ ] Python test suite
 - [ ] Bug mode + release gate
 - [ ] Ask Rostr assistant + eval-style tests
@@ -25,8 +25,8 @@ Live site: https://nataliakrasnova.netlify.app (coming soon)
 ## Run it locally
 
 ```bash
-# serve the site
-python -m http.server 8888 --directory site
+# serve the site + API (needs Node 22.18+)
+npm run dev
 
 # in another terminal: install and run the tests
 python -m venv .venv
