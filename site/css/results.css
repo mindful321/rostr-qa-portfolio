@@ -1,0 +1,61 @@
+/* Test results page */
+.results .wrap { padding-top: 32px; padding-bottom: 72px; display: flex; flex-direction: column; gap: 48px; }
+.results-head { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center; }
+.results-head .text { flex: 999 1 480px; min-width: 0; }
+.results-head h1 { font-size: clamp(40px, 5vw, 56px); letter-spacing: -0.02em; line-height: 1.05; margin-top: 4px; }
+.results-head .hand-label { font-family: var(--hand); font-size: 24px; color: var(--coral-dark); }
+.results-head .hand-label a { color: inherit; }
+.results-head svg { flex: 1 1 200px; max-width: 240px; height: auto; }
+.data-source { font-size: 14px; color: var(--muted); padding-top: 10px; }
+
+.decision-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.decision { border: 2px solid var(--ink); border-radius: 14px; padding: 22px 24px; display: flex; gap: 18px; align-items: center; }
+.decision.go { background: var(--sage-tint); }
+.decision.nogo { background: var(--coral-tint); }
+.decision .big-stamp { font-family: var(--hand); font-weight: 700; font-size: 36px; border: 3px solid currentColor; border-radius: 10px; padding: 0 12px; display: inline-block; white-space: nowrap; }
+.decision.go .big-stamp { color: var(--sage); transform: rotate(-5deg); }
+.decision.nogo .big-stamp { color: var(--coral-dark); transform: rotate(4deg); }
+.decision .label { font-size: 14px; font-weight: 700; color: var(--muted); }
+.decision .headline { font-family: var(--serif); font-size: 22px; font-weight: 600; line-height: 1.25; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.stat-grid .card { padding: 20px; }
+.stat-grid .label { font-size: 14px; font-weight: 700; color: var(--muted); }
+.stat-grid .num { font-family: var(--serif); font-size: clamp(32px, 3.6vw, 44px); font-weight: 700; line-height: 1.1; }
+.stat-grid .num.sage { color: var(--sage); }
+.stat-grid .num.coral { color: var(--coral-dark); }
+.stat-grid .sub { color: var(--ink-2); }
+
+.results h2 { font-size: 34px; margin-bottom: 6px; }
+.results .intro { margin: 0 0 16px; color: var(--ink-2); line-height: 1.6; }
+.table-card { overflow-x: auto; background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 8px 12px; }
+.m { border-collapse: collapse; width: 100%; font-size: 16px; }
+.m th, .m td { text-align: left; padding: 12px 14px; border-bottom: 1px dashed var(--rule); white-space: nowrap; vertical-align: top; }
+.m th { font-size: 14px; color: var(--muted); font-weight: 700; border-bottom: 2px solid var(--ink); }
+.m tr:last-child td { border-bottom: 0; }
+.m .mono { font-family: var(--mono); font-size: 13px; }
+.m .pass { color: var(--sage); font-weight: 700; }
+.m .caught { color: var(--coral-dark); font-weight: 700; }
+.m .missed { color: #fff; background: var(--coral-dark); font-weight: 700; border-radius: 4px; padding: 2px 6px; }
+.m td.wrap { white-space: normal; min-width: 220px; }
+.pill { font-weight: 700; font-size: 14px; padding: 2px 10px; border-radius: 999px; border: 2px solid var(--ink); }
+.pill.high { background: var(--coral-tint); color: #8a2e17; }
+.pill.medium { background: #fbf3d9; color: #5c3d0a; }
+.pill.low { background: var(--sage-tint); color: var(--sage-dark); }
+
+.two-col { display: flex; flex-wrap: wrap; gap: 24px; }
+.two-col > * { flex: 1 1 400px; min-width: 0; }
+.strategy { background: var(--sage-tint); border: 2px solid var(--ink); border-radius: 14px; padding: 24px; }
+.strategy h2, .bug-report h2 { font-size: 26px; display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.strategy p { margin: 0 0 10px; color: var(--ink-2); line-height: 1.55; font-size: 17px; }
+.strategy b, .bug-report b { color: var(--ink); }
+.bug-report { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 24px; transform: rotate(0.6deg); box-shadow: 4px 4px 0 var(--coral); }
+.bug-report .tag { font-family: var(--hand); font-weight: 700; font-size: 22px; color: var(--coral-dark); }
+.bug-report .title { font-family: var(--serif); font-size: 24px; font-weight: 600; padding: 4px 0 12px; }
+.bug-report div { color: var(--ink-2); font-size: 16px; line-height: 1.5; }
+.bug-report div + div { margin-top: 8px; }
+.repo { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 24px; font-family: var(--mono); font-size: 14px; line-height: 1.8; color: var(--ink-2); overflow-x: auto; white-space: pre; margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .decision .big-stamp, .bug-report { transform: none; }
+}

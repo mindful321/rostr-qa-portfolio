@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&family=Caveat:wght@500;700&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="css/results.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -29,11 +30,142 @@
     </div>
   </header>
 
-  <main id="main" class="placeholder">
+  <main id="main" class="results">
     <div class="wrap">
-      <h1 data-testid="page-title">Test results</h1>
-      <p>Live results from GitHub Actions will appear here once the test suite is running.</p>
-      <p><a href="index.html">← Back to About</a></p>
+      <div class="results-head">
+        <div class="text">
+          <div class="hand-label" data-testid="run-line">published by GitHub Actions on every push · run #<span data-run-number>…</span> · <span data-run-date>…</span></div>
+          <h1 data-testid="page-title">Test results</h1>
+          <div class="actions">
+            <a class="btn btn-primary" href="https://github.com/mindful321/rostr-qa-portfolio/actions" data-run-link data-testid="ci-link">Latest CI run</a>
+            <a class="btn btn-outline" href="https://github.com/mindful321/rostr-qa-portfolio" data-testid="source-link">Source on GitHub</a>
+          </div>
+          <div class="data-source" data-testid="data-source" aria-live="polite">Loading the latest results…</div>
+        </div>
+        <svg viewBox="0 0 220 160" role="img" aria-label="Hand-drawn clipboard test report with a big checkmark">
+          <rect x="40" y="18" width="120" height="136" rx="10" fill="#e8efe6" stroke="#2b2a27" stroke-width="2.5" transform="rotate(-5 100 86)"/>
+          <rect x="76" y="8" width="48" height="20" rx="5" fill="#fffdf8" stroke="#2b2a27" stroke-width="2.5" transform="rotate(-5 100 86)"/>
+          <g transform="rotate(-5 100 86)" stroke="#2b2a27" stroke-width="2.5" stroke-linecap="round" fill="none">
+            <path d="M60 50 h80 M60 70 h64 M60 90 h72"/>
+            <path d="M66 112 l16 18 l40 -46" stroke="#2f6f62" stroke-width="6"/>
+          </g>
+          <text x="150" y="150" font-family="Caveat, cursive" font-size="22" fill="#b23f24" transform="rotate(-8 170 150)">all green!</text>
+        </svg>
+      </div>
+
+      <section aria-label="Release decision" class="decision-grid">
+        <div class="decision go" data-testid="decision-clean">
+          <span class="big-stamp" data-clean-stamp>GO</span>
+          <div><div class="label">RELEASE DECISION · CLEAN BUILD</div><div class="headline" data-clean-headline>…</div></div>
+        </div>
+        <div class="decision nogo" data-testid="decision-bugged">
+          <span class="big-stamp">NO-GO</span>
+          <div><div class="label">RELEASE DECISION · BUG-MODE BUILD</div><div class="headline" data-bugged-headline>…</div></div>
+        </div>
+      </section>
+
+      <div class="stat-grid">
+        <div class="card shadow-sage tilt-l">
+          <div class="label">BUG MODE OFF</div>
+          <div class="num sage" data-testid="stat-clean">…</div>
+          <div class="sub">tests passed</div>
+        </div>
+        <div class="card shadow-coral tilt-r">
+          <div class="label">BUG MODE ON</div>
+          <div class="num coral" data-testid="stat-caught">…</div>
+          <div class="sub">planted bugs caught</div>
+        </div>
+        <div class="card shadow-sage tilt-l">
+          <div class="label">DURATION</div>
+          <div class="num" data-testid="stat-duration">…</div>
+          <div class="sub">clean run, Chromium</div>
+        </div>
+        <div class="card shadow-coral tilt-r">
+          <div class="label">COVERAGE</div>
+          <div class="num">5 layers</div>
+          <div class="sub">UI · API · unit · accessibility · assistant evals</div>
+        </div>
+      </div>
+
+      <section>
+        <h2>Bug-catch matrix</h2>
+        <p class="intro">The same suite runs twice. A test that passes on the clean app and fails on the bugged one proves it actually guards against that regression.</p>
+        <div class="table-card" tabindex="0" role="region" aria-label="Bug-catch matrix (scrollable)">
+          <table class="m" data-testid="bug-matrix">
+            <thead><tr><th>#</th><th>PLANTED BUG</th><th>SCREEN</th><th>LAYER</th><th>CAUGHT BY</th><th>CLEAN</th><th>BUGGED</th></tr></thead>
+            <tbody data-matrix><tr><td colspan="7">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="two-col">
+        <div>
+          <h2>Risk map</h2>
+          <p class="intro">Where a bug would hurt most decides where testing goes deepest.</p>
+          <div class="table-card" tabindex="0" role="region" aria-label="Risk map (scrollable)">
+            <table class="m" data-testid="risk-map">
+              <thead><tr><th>AREA</th><th>RISK</th><th>WHY</th><th>HOW IT&#39;S TESTED</th></tr></thead>
+              <tbody>
+                <tr><td>Payroll</td><td><span class="pill high">High</span></td><td>Wrong pay = real money</td><td>Unit + API + UI, every push</td></tr>
+                <tr><td>Ask Rostr (AI)</td><td><span class="pill high">High</span></td><td>Can leak data or make things up</td><td>Eval-style tests, golden dataset</td></tr>
+                <tr><td>Login</td><td><span class="pill high">High</span></td><td>Security</td><td>UI + API, negative cases</td></tr>
+                <tr><td>Time off</td><td><span class="pill medium">Medium</span></td><td>Balances must add up</td><td>API + database checks</td></tr>
+                <tr><td>Schedule</td><td><span class="pill medium">Medium</span></td><td>Overlaps, time zones</td><td>UI + API</td></tr>
+                <tr><td>Look &amp; layout</td><td><span class="pill low">Low</span></td><td>Annoying, not costly</td><td>axe scan + quick manual pass</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h2>Golden dataset</h2>
+          <p class="intro">Questions with known right answers. Ask Rostr is scored against them on every run.</p>
+          <div class="table-card" tabindex="0" role="region" aria-label="Golden dataset (scrollable)">
+            <table class="m" data-testid="golden-dataset">
+              <thead><tr><th>QUESTION</th><th>EXPECTED</th><th>CHECK</th></tr></thead>
+              <tbody data-golden><tr><td colspan="3">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="two-col">
+        <div class="strategy">
+          <h2><svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true"><path d="M15 4 h10 M17 4 v12 l-10 17 a3 3 0 0 0 3 4 h20 a3 3 0 0 0 3 -4 l-10 -17 v-12" fill="#fffdf8" stroke="#2b2a27" stroke-width="2" stroke-linejoin="round"/><path d="M11 28 h18 l3 5 a2 2 0 0 1 -2 3 h-20 a2 2 0 0 1 -2 -3 z" fill="#2f6f62"/></svg>Test strategy</h2>
+          <p><b>UI / E2E:</b> Python + Playwright + Pytest, Page Object Model, Chromium / Firefox / WebKit</p>
+          <p><b>API:</b> Pytest + requests, schema validation, negative cases</p>
+          <p><b>Unit:</b> payroll and overtime rules in TypeScript (node --test)</p>
+          <p><b>Assistant evals:</b> Pytest against a golden dataset: correctness, hallucination and prompt-injection checks (DeepEval-ready)</p>
+          <p><b>Accessibility:</b> axe-core on every screen</p>
+          <p><b>CI release gate:</b> GitHub Actions runs clean vs bugged; the release is blocked unless every planted bug is caught</p>
+        </div>
+        <div class="bug-report" data-testid="bug-report">
+          <div class="tag">SAMPLE BUG REPORT · BUG-06</div>
+          <div class="title">Overtime not paid for hours over 40</div>
+          <div><b>Severity:</b> Critical (payroll) · <b>Env:</b> bug mode, Chromium</div>
+          <div><b>Steps:</b> Sign in → Timesheet → find Maria L. (44 h @ $22.50)</div>
+          <div><b>Expected:</b> 4 OT h, gross $1,035.00</div>
+          <div><b>Actual:</b> 0 OT h, gross $990.00</div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Repo layout</h2>
+        <pre class="repo" tabindex="0" aria-label="Repository layout (scrollable)">tests/
+  ui/          test_login.py  test_schedule.py  test_timeoff.py  test_timesheet.py
+               test_assistant.py  test_responsive.py  test_home.py
+  api/         test_api_auth.py  test_api_shifts.py  test_api_timeoff.py
+               test_api_payroll.py  test_api_smoke.py
+  evals/       test_assistant_evals.py  golden_dataset.json
+  a11y/        test_axe.py
+  unit/        logic.test.ts
+  pages/       home_page.py  rostr_app.py        # page objects
+  support/     api_client.py
+  conftest.py                                     # base URL, --bug-mode, signed-in fixtures
+  bug_catalog.json                                # which tests must catch each bug
+scripts/release_gate.py                           # GO / NO-GO
+netlify/functions/                                # the Rostr API (TypeScript)
+.github/workflows/tests.yml</pre>
+      </section>
     </div>
   </main>
 
@@ -50,5 +182,6 @@
       </div>
     </div>
   </footer>
+  <script type="module" src="js/results.js"></script>
 </body>
 </html>

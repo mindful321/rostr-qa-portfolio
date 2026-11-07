@@ -2,7 +2,7 @@
 // matching each function's `config.path` the way Netlify does. No extra packages needed.
 // Usage: node scripts/dev-server.mjs [port]        (Node 22.18+ / 23.6+ for TypeScript support)
 import { createServer } from "node:http";
-import { readFile, readdir, stat } from "node:fs/promises";
+import { copyFile, mkdir, readFile, readdir, stat } from "node:fs/promises";
 import { extname, join, normalize, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -61,6 +61,10 @@ async function serveStatic(pathname, res) {
     await send(res, new Response("Not found", { status: 404 }));
   }
 }
+
+// Same as the Netlify build step: the Test results page reads the golden dataset from site/data/.
+await mkdir(join(SITE, "data"), { recursive: true });
+await copyFile(join(ROOT, "tests", "evals", "golden_dataset.json"), join(SITE, "data", "golden_dataset.json"));
 
 const routes = await loadRoutes();
 createServer(async (req, res) => {

@@ -11,7 +11,7 @@ Live site: https://nataliakrasnova.netlify.app (coming soon)
 - [x] Test suite: 141 Python tests (UI, API, assistant evals, accessibility) + 11 TypeScript unit tests
 - [x] Bug mode + release gate: 10 planted bugs, CI blocks the release unless every one is caught
 - [ ] Ask Rostr assistant + eval-style tests
-- [ ] Live test results page
+- [x] Live Test results page: CI publishes results.json to the `results` branch after every push to main; /results reads it (falls back to a snapshot)
 
 ## How it's built
 

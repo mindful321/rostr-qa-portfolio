@@ -10,6 +10,7 @@ Exit code 0 = GO, 1 = NO-GO. Also writes a JSON summary for the Test results pag
 """
 import argparse
 import json
+import os
 import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -24,7 +25,9 @@ def read_junit(path: str) -> dict:
     root = ET.parse(path).getroot()
     tests, total_time = [], 0.0
     for case in root.iter("testcase"):
-        file = case.get("classname", "").split(".")[-1]
+        parts = case.get("classname", "").split(".")
+        file = parts[-1]
+        layer = parts[1] if len(parts) > 2 and parts[0] == "tests" else "other"
         test_id = f"{file}::{case.get('name')}"
         if case.find("failure") is not None or case.find("error") is not None:
             outcome = "failed"
@@ -32,7 +35,7 @@ def read_junit(path: str) -> dict:
             outcome = "skipped"
         else:
             outcome = "passed"
-        tests.append({"id": test_id, "outcome": outcome})
+        tests.append({"id": test_id, "layer": layer, "outcome": outcome})
     for suite in root.iter("testsuite"):
         total_time += float(suite.get("time", 0))
     return {"tests": tests, "time": round(total_time, 1)}
@@ -40,9 +43,26 @@ def read_junit(path: str) -> dict:
 
 def summarize(run: dict) -> dict:
     counts = {"passed": 0, "failed": 0, "skipped": 0}
+    layers: dict[str, dict] = {}
     for t in run["tests"]:
         counts[t["outcome"]] += 1
-    return {**counts, "total": len(run["tests"]), "seconds": run["time"]}
+        layer = layers.setdefault(t["layer"], {"passed": 0, "failed": 0, "skipped": 0, "total": 0})
+        layer[t["outcome"]] += 1
+        layer["total"] += 1
+    return {**counts, "total": len(run["tests"]), "seconds": run["time"], "layers": layers}
+
+
+def run_details() -> dict:
+    """Where this result came from (filled in on GitHub Actions, empty locally)."""
+    server, repo, run_id = os.getenv("GITHUB_SERVER_URL"), os.getenv("GITHUB_REPOSITORY"), os.getenv("GITHUB_RUN_ID")
+    sha = os.getenv("GITHUB_SHA", "")
+    return {
+        "number": os.getenv("GITHUB_RUN_NUMBER"),
+        "url": f"{server}/{repo}/actions/runs/{run_id}" if server and repo and run_id else None,
+        "commit": sha[:7] or None,
+        "commitUrl": f"{server}/{repo}/commit/{sha}" if server and repo and sha else None,
+        "branch": os.getenv("GITHUB_REF_NAME"),
+    }
 
 
 def main() -> int:
@@ -72,6 +92,7 @@ def main() -> int:
 
     result = {
         "generatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "run": run_details(),
         "decision": decision,
         "reasons": reasons,
         "clean": clean_summary,

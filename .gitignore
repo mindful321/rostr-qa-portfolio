@@ -8,3 +8,4 @@ allure-results/
 allure-report/
 .env
 .DS_Store
+site/data/golden_dataset.json

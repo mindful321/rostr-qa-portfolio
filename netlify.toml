@@ -2,8 +2,8 @@
 [build]
   publish = "site"
   functions = "netlify/functions"
-  # No build step yet: the site is plain HTML/CSS.
-  command = ""
+  # The only build step: copy the golden dataset so the Test results page can show it.
+  command = "mkdir -p site/data && cp tests/evals/golden_dataset.json site/data/golden_dataset.json"
 
 [functions]
   node_bundler = "esbuild"
