@@ -108,7 +108,7 @@ async function resetData() {
 
 // ---------- Schedule ----------
 async function renderSchedule(notice) {
-  const res = await api("/shifts?tz=America/Edmonton");
+  const res = await api("/shifts");
   if (res.status === 401) return renderLogin();
   if (!res.ok) return renderError(res);
   const { days, employees, shifts } = res.data;
@@ -294,7 +294,40 @@ function show(tab, noticeText) {
   return SCREENS[tab](noticeText ? { text: noticeText, ok: true } : undefined);
 }
 
+// ---------- Bug mode ----------
+const bugToggle = document.querySelector("[data-testid=bug-toggle]");
+const spoilerToggle = document.querySelector("[data-testid=spoiler-toggle]");
+const spoilers = document.getElementById("spoilers");
+const bugStamp = document.getElementById("bug-stamp");
+
+function bugModeOn() {
+  return document.cookie.split("; ").includes("bug_mode=on");
+}
+
+function renderBugMode() {
+  const on = bugModeOn();
+  bugToggle.textContent = on ? "● Bug mode: ON" : "○ Bug mode: OFF";
+  bugToggle.setAttribute("aria-pressed", String(on));
+  bugStamp.hidden = !on;
+}
+
+bugToggle.addEventListener("click", () => {
+  // The API reads this cookie on every request, so the bugs switch on/off immediately.
+  document.cookie = `bug_mode=${bugModeOn() ? "off" : "on"}; path=/; max-age=86400; SameSite=Lax`;
+  renderBugMode();
+  chat = [];
+  if (!nav.hidden) show(current);
+});
+
+spoilerToggle.addEventListener("click", () => {
+  const open = spoilers.hidden;
+  spoilers.hidden = !open;
+  spoilerToggle.setAttribute("aria-expanded", String(open));
+  spoilerToggle.textContent = open ? "Hide spoilers" : "Show spoilers";
+});
+
 async function start() {
+  renderBugMode();
   const me = await api("/auth/me");
   if (me.ok) show("schedule");
   else renderLogin();

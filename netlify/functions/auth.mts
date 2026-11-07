@@ -2,6 +2,7 @@
 // POST /api/v1/auth/logout                        -> 204, clears the cookie
 // GET  /api/v1/auth/me                            -> 200 { user } | 401
 import { DEMO_USER } from "../lib/seed.ts";
+import { isBugMode } from "../lib/bugs.ts";
 import { error, json, methodNotAllowed, readJson } from "../lib/http.ts";
 import { clearSessionCookie, newSession, readSession, sessionCookie } from "../lib/session.ts";
 
@@ -14,7 +15,9 @@ export default async (req: Request, context: { params?: Record<string, string> }
     const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
     const password = typeof body?.password === "string" ? body.password : "";
     if (!email || !password) return error(400, "missing_fields", "Email and password are required.");
-    if (email !== DEMO_USER.email || password !== DEMO_USER.password) {
+    // PLANTED BUG-01: in bug mode, the demo account accepts ANY password.
+    const passwordOk = isBugMode(req) || password === DEMO_USER.password;
+    if (email !== DEMO_USER.email || !passwordOk) {
       return error(401, "invalid_credentials", "Incorrect email or password.");
     }
     const cookie = await sessionCookie(newSession(DEMO_USER.email), req);

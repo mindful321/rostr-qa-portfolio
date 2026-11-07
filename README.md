@@ -9,7 +9,7 @@ Live site: https://nataliakrasnova.netlify.app (coming soon)
 - [x] Home page
 - [x] Rostr app (clean): login, schedule, time off, timesheet, Ask Rostr
 - [x] Test suite: 141 Python tests (UI, API, assistant evals, accessibility) + 11 TypeScript unit tests
-- [ ] Bug mode + release gate
+- [x] Bug mode + release gate: 10 planted bugs, CI blocks the release unless every one is caught
 - [ ] Ask Rostr assistant + eval-style tests
 - [ ] Live test results page
 
@@ -50,4 +50,19 @@ pytest -m api --base-url http://localhost:8888     # one layer: ui, api, evals, 
 npm run test:unit                                  # TypeScript unit tests
 ```
 
-Add `--bug-mode` to run the suite with Rostr's planted bugs switched on (once bug mode exists).
+## Bug mode and the release gate
+
+Switching on bug mode (the toggle on `/demo`, or `--bug-mode` in pytest) sets a `bug_mode=on` cookie, and Rostr plants 10 real defects. Each one is a small branch in the app code marked `PLANTED BUG-NN` (`netlify/lib/bugs.ts` lists them).
+
+The **release gate** (`scripts/release_gate.py`, CI job `release gate`) runs the suite twice:
+
+1. **Clean build:** every test must pass.
+2. **Bug mode:** every bug in `tests/bug_catalog.json` must be caught by at least one of its tests.
+
+Both true → **GO**. Anything else → **NO-GO**, and the job fails.
+
+```bash
+pytest --base-url http://localhost:8888 --junitxml=clean.xml
+pytest --base-url http://localhost:8888 --bug-mode --junitxml=bugged.xml
+python scripts/release_gate.py --clean clean.xml --bugged bugged.xml
+```

@@ -1,7 +1,7 @@
 // "Ask Rostr": a scripted assistant (no AI model, no cost). It answers a few kinds of questions
 // from the visitor's own data and refuses anything about pay. Deterministic, so it is easy to test.
 import { DAY_NAMES, EMPLOYEES } from "./seed.ts";
-import { allShifts, balances } from "./views.ts";
+import { allShifts, balances, payrollView } from "./views.ts";
 import type { SessionState } from "./session.ts";
 
 export const SUGGESTED_QUESTIONS = [
@@ -24,11 +24,16 @@ function listNames(names: string[]): string {
   return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
 }
 
-export function answer(question: string, state: SessionState): AssistantAnswer {
+export function answer(question: string, state: SessionState, bug = false): AssistantAnswer {
   const q = question.toLowerCase();
   const words = q.split(/[^a-z']+/);
 
   if (PAY_WORDS.some((w) => words.includes(w))) {
+    if (bug) {
+      // PLANTED BUG-10: in bug mode, the assistant follows the injected instruction and leaks pay.
+      const rows = payrollView(state, bug).rows.map((r) => `${r.employeeName} $${r.gross.toFixed(2)}`);
+      return { intent: "schedule", answer: `Sure! ${rows.join(", ")}.`, sources: ["payroll"] };
+    }
     return {
       intent: "refusal",
       answer: "Sorry, I can't share pay details. A payroll admin can help with that.",
@@ -44,12 +49,14 @@ export function answer(question: string, state: SessionState): AssistantAnswer {
     const day = DAY_NAMES[dayIndex];
     if (shifts.length === 0) return { intent: "schedule", answer: `Nobody is scheduled on ${day}.`, sources: ["schedule"] };
     const parts = shifts.map((s) => `${EMPLOYEES.find((e) => e.id === s.employeeId)?.name} (${s.start}–${s.end})`);
+    // PLANTED BUG-09: in bug mode, the assistant "hallucinates" an extra person on Wednesdays.
+    if (bug && dayIndex === 2) parts.push("Sam R. (10:00–18:00)");
     return { intent: "schedule", answer: `${listNames(parts)}.`, sources: ["schedule"] };
   }
 
   const employee = findEmployee(q);
   if (employee && /(day|days|time off|pto|vacation|leave)/.test(q)) {
-    const left = balances(state)[employee.id];
+    const left = balances(state, bug)[employee.id];
     return {
       intent: "time_off",
       answer: `${employee.name} has ${left} days of time off left.`,

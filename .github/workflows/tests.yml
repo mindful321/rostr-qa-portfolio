@@ -69,3 +69,40 @@ jobs:
         with:
           name: playwright-traces-${{ matrix.browser }}
           path: test-results/
+
+  release-gate:
+    name: release gate (clean must pass, bug mode must catch all 10 bugs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: tests/requirements.txt
+      - name: Install test dependencies
+        run: |
+          pip install -r tests/requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: Start the Rostr dev server
+        run: |
+          node scripts/dev-server.mjs 8888 &
+          for i in $(seq 1 20); do curl -sf http://localhost:8888/api/v1/health && break; sleep 1; done
+      - name: Run 1 - clean build
+        run: pytest -m "ui or api or evals" --base-url http://localhost:8888 --browser chromium --junitxml=clean.xml || true
+      - name: Run 2 - bug mode (failures expected)
+        run: pytest -m "ui or api or evals" --bug-mode --base-url http://localhost:8888 --browser chromium --junitxml=bugged.xml || true
+      - name: GO / NO-GO
+        run: python scripts/release_gate.py --clean clean.xml --bugged bugged.xml --out results.json
+      - name: Keep the results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-results
+          path: |
+            results.json
+            clean.xml
+            bugged.xml

@@ -29,16 +29,21 @@ export function round2(n: number): number {
 export type PayLine = { hours: number; regularHours: number; overtimeHours: number; rate: number; gross: number };
 
 /** Hours up to 40 are paid at the rate, hours after 40 at 1.5×. Gross is rounded to the cent. */
-export function computePay(hours: number, rate: number): PayLine {
-  const overtimeHours = Math.max(0, hours - OVERTIME_AFTER_HOURS);
+export function computePay(hours: number, rate: number, bug = false): PayLine {
+  // PLANTED BUG-06: in bug mode, overtime is never counted.
+  const overtimeHours = bug ? 0 : Math.max(0, hours - OVERTIME_AFTER_HOURS);
   const regularHours = hours - overtimeHours;
-  const gross = round2(regularHours * rate + overtimeHours * rate * OVERTIME_MULTIPLIER);
+  const exact = regularHours * rate + overtimeHours * rate * OVERTIME_MULTIPLIER;
+  // PLANTED BUG-07: in bug mode, pay is truncated to whole dollars instead of rounded to the cent.
+  const gross = bug ? Math.floor(exact) : round2(exact);
   return { hours, regularHours, overtimeHours, rate, gross };
 }
 
 /** Labels for the demo week, e.g. "Mon Nov 9". */
-export function weekDays(): { index: number; date: string; label: string }[] {
+export function weekDays(bug = false): { index: number; date: string; label: string }[] {
   const monday = new Date(`${WEEK_START}T12:00:00Z`);
+  // PLANTED BUG-02: in bug mode, the week starts a day early (Sunday Nov 8 labelled as Monday).
+  if (bug) monday.setUTCDate(monday.getUTCDate() - 1);
   return DAY_NAMES.map((name, index) => {
     const d = new Date(monday);
     d.setUTCDate(monday.getUTCDate() + index);
