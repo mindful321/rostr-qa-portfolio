@@ -1,5 +1,8 @@
-"""Starter API smoke tests: prove the API is up and auth works. The full API suite comes next."""
+"""API smoke tests: prove the API is up and auth works. Run alone with: pytest -m smoke"""
+import pytest
 import requests
+
+pytestmark = pytest.mark.smoke
 
 DEMO_LOGIN = {"email": "manager@rostr.demo", "password": "password"}
 

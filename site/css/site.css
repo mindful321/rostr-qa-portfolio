@@ -93,7 +93,7 @@ img, svg { max-width: 100%; }
 .side .section-title h2 { font-size: 28px; }
 .job { padding: 24px 0; border-bottom: 2px dashed var(--rule); }
 .job:last-child { border-bottom: 0; }
-.job-dates { font-family: var(--hand); font-size: 22px; color: var(--coral); }
+.job-dates { font-family: var(--hand); font-size: 22px; color: var(--coral-dark); } /* coral failed WCAG AA contrast at 22px (found by test_axe) */
 .job h3 { font-size: 26px; margin-top: 2px; }
 .job-role { color: var(--sage); font-weight: 600; padding: 2px 0 10px; }
 .job p { margin: 0; color: var(--ink-2); line-height: 1.6; }

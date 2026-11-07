@@ -8,7 +8,7 @@ Live site: https://nataliakrasnova.netlify.app (coming soon)
 
 - [x] Home page
 - [x] Rostr app (clean): login, schedule, time off, timesheet, Ask Rostr
-- [ ] Python test suite
+- [x] Test suite: 141 Python tests (UI, API, assistant evals, accessibility) + 11 TypeScript unit tests
 - [ ] Bug mode + release gate
 - [ ] Ask Rostr assistant + eval-style tests
 - [ ] Live test results page
@@ -22,18 +22,32 @@ Live site: https://nataliakrasnova.netlify.app (coming soon)
 | Tests | Python: Pytest, Playwright, requests (`tests/`) |
 | CI | GitHub Actions (`.github/workflows/`) |
 
+## Test suite
+
+| Layer | Where | What it covers |
+| --- | --- | --- |
+| UI | `tests/ui/` | Login, schedule, time off, timesheet, Ask Rostr, phone and tablet sizes (Playwright, Page Object Model) |
+| API | `tests/api/` | Every endpoint: auth, tampered cookies, validation, overlaps, double decisions, payroll maths |
+| Assistant evals | `tests/evals/` | Golden dataset: correctness, no made-up people, prompt-injection refusals |
+| Accessibility | `tests/a11y/` | axe-core WCAG 2.1 AA scan of every page and screen |
+| Unit | `tests/unit/` | Pay, overtime, rounding, time and overlap rules (TypeScript, `node --test`) |
+
+CI runs the unit, API and eval jobs, and the UI + accessibility job in Chromium, Firefox and WebKit.
+
 ## Run it locally
 
 ```bash
-# serve the site + API (needs Node 22.18+)
+# 1. start the site + API (needs Node 22.18+)
 npm run dev
 
-# in another terminal: install and run the tests
+# 2. in another terminal: install and run the tests
 python -m venv .venv
 .venv\Scripts\activate          # Windows (macOS/Linux: source .venv/bin/activate)
 pip install -r tests/requirements.txt
 python -m playwright install chromium
-pytest --base-url http://localhost:8888
+pytest --base-url http://localhost:8888            # everything
+pytest -m api --base-url http://localhost:8888     # one layer: ui, api, evals, a11y, smoke
+npm run test:unit                                  # TypeScript unit tests
 ```
 
 Add `--bug-mode` to run the suite with Rostr's planted bugs switched on (once bug mode exists).

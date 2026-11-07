@@ -5,32 +5,67 @@ on:
   pull_request:
 
 jobs:
-  ui-tests:
+  unit:
+    name: unit (payroll + time rules)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: node --test "tests/unit/*.test.ts"
 
+  api-and-evals:
+    name: api + assistant evals
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: tests/requirements.txt
-
-      - name: Install test dependencies
-        run: |
-          pip install -r tests/requirements.txt
-          python -m playwright install --with-deps chromium
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-
+      - run: pip install -r tests/requirements.txt
       # Local stand-in for Netlify: serves site/ and runs the API functions.
-      # Later this job will run against the Netlify deploy preview instead.
       - name: Start the Rostr dev server
         run: |
           node scripts/dev-server.mjs 8888 &
           for i in $(seq 1 20); do curl -sf http://localhost:8888/api/v1/health && break; sleep 1; done
+      - run: pytest -m "api or evals" --base-url http://localhost:8888
 
-      - name: Run tests
-        run: pytest --base-url http://localhost:8888 --browser chromium
+  ui:
+    name: ui + a11y (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: tests/requirements.txt
+      - name: Install test dependencies
+        run: |
+          pip install -r tests/requirements.txt
+          python -m playwright install --with-deps ${{ matrix.browser }}
+      - name: Start the Rostr dev server
+        run: |
+          node scripts/dev-server.mjs 8888 &
+          for i in $(seq 1 20); do curl -sf http://localhost:8888/api/v1/health && break; sleep 1; done
+      - name: Run UI and accessibility tests
+        run: pytest -m "ui or a11y" --base-url http://localhost:8888 --browser ${{ matrix.browser }} --screenshot only-on-failure --tracing retain-on-failure
+      - name: Keep screenshots and traces of failed tests
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces-${{ matrix.browser }}
+          path: test-results/
