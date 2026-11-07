@@ -1,0 +1,15 @@
+{
+  "name": "rostr-qa-portfolio",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Natalia Krasnova's QA portfolio and the Rostr demo app with bug mode.",
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "serve": "python -m http.server 8888 --directory site"
+  },
+  "devDependencies": {
+    "netlify-cli": "^27.16.2",
+    "typescript": "^5.6.0"
+  }
+}

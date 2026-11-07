@@ -1,0 +1,22 @@
+# Netlify: static pages from /site, API functions from /netlify/functions.
+[build]
+  publish = "site"
+  functions = "netlify/functions"
+  # No build step yet: the site is plain HTML/CSS.
+  command = ""
+
+[functions]
+  node_bundler = "esbuild"
+
+# Pretty API paths: /api/v1/<name> -> function <name>
+[[redirects]]
+  from = "/api/v1/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
