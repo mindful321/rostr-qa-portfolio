@@ -1,0 +1,192 @@
+{
+  "generatedAt": "2026-11-07T04:43:28+00:00",
+  "run": {
+    "number": null,
+    "url": null,
+    "commit": null,
+    "commitUrl": null,
+    "branch": null
+  },
+  "decision": "GO",
+  "reasons": [],
+  "clean": {
+    "passed": 141,
+    "failed": 0,
+    "skipped": 0,
+    "total": 141,
+    "seconds": 42.0,
+    "layers": {
+      "a11y": {
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0,
+        "total": 7
+      },
+      "ui": {
+        "passed": 44,
+        "failed": 0,
+        "skipped": 0,
+        "total": 44
+      },
+      "api": {
+        "passed": 69,
+        "failed": 0,
+        "skipped": 0,
+        "total": 69
+      },
+      "evals": {
+        "passed": 21,
+        "failed": 0,
+        "skipped": 0,
+        "total": 21
+      }
+    }
+  },
+  "bugMode": {
+    "passed": 96,
+    "failed": 38,
+    "skipped": 0,
+    "total": 134,
+    "seconds": 103.0,
+    "layers": {
+      "ui": {
+        "passed": 31,
+        "failed": 13,
+        "skipped": 0,
+        "total": 44
+      },
+      "api": {
+        "passed": 50,
+        "failed": 19,
+        "skipped": 0,
+        "total": 69
+      },
+      "evals": {
+        "passed": 15,
+        "failed": 6,
+        "skipped": 0,
+        "total": 21
+      }
+    },
+    "bugsCaught": 10,
+    "bugsPlanted": 10
+  },
+  "bugs": [
+    {
+      "id": "BUG-01",
+      "area": "Login",
+      "layer": "UI + API",
+      "summary": "A wrong password still signs you in",
+      "caught": true,
+      "caught_by": [
+        "test_login::test_bad_credentials_are_rejected[chromium-wrong-password]",
+        "test_login::test_bad_credentials_are_rejected[chromium-wrong-case]",
+        "test_api_auth::test_bad_credentials_get_401_without_leaking_which_part_was_wrong[wrong-password]",
+        "test_api_auth::test_bad_credentials_get_401_without_leaking_which_part_was_wrong[wrong-case]",
+        "test_api_auth::test_bad_credentials_get_401_without_leaking_which_part_was_wrong[leading-space]"
+      ]
+    },
+    {
+      "id": "BUG-02",
+      "area": "Schedule",
+      "layer": "UI + API",
+      "summary": "Week dates are one day early",
+      "caught": true,
+      "caught_by": [
+        "test_schedule::test_week_header_shows_monday_nov_9_to_friday_nov_13[chromium]",
+        "test_api_shifts::test_schedule_shape"
+      ]
+    },
+    {
+      "id": "BUG-03",
+      "area": "Schedule",
+      "layer": "UI + API",
+      "summary": "An overlapping shift gets saved",
+      "caught": true,
+      "caught_by": [
+        "test_schedule::test_overlapping_shift_is_blocked[chromium]",
+        "test_api_shifts::test_overlapping_shift_gets_409[overlaps-end]",
+        "test_api_shifts::test_overlapping_shift_gets_409[overlaps-start]",
+        "test_api_shifts::test_overlapping_shift_gets_409[inside]",
+        "test_api_shifts::test_overlapping_shift_gets_409[covers]",
+        "test_api_shifts::test_overlapping_shift_gets_409[identical]"
+      ]
+    },
+    {
+      "id": "BUG-04",
+      "area": "Time off",
+      "layer": "UI + API",
+      "summary": "Deny approves the request",
+      "caught": true,
+      "caught_by": [
+        "test_timeoff::test_denying_marks_denied_and_keeps_the_balance[chromium]",
+        "test_api_timeoff::test_deny_does_not_change_any_balance"
+      ]
+    },
+    {
+      "id": "BUG-05",
+      "area": "Time off",
+      "layer": "UI + API",
+      "summary": "Approved days come off the wrong person's balance",
+      "caught": true,
+      "caught_by": [
+        "test_timeoff::test_approving_deducts_from_the_requester_only[chromium]",
+        "test_api_timeoff::test_approve_deducts_from_the_right_person_only[r1-dev-2]",
+        "test_api_timeoff::test_approve_deducts_from_the_right_person_only[r2-aisha-3]"
+      ]
+    },
+    {
+      "id": "BUG-06",
+      "area": "Timesheet",
+      "layer": "UI + API",
+      "summary": "No overtime is paid after 40 hours",
+      "caught": true,
+      "caught_by": [
+        "test_timesheet::test_maria_gets_four_hours_of_overtime[chromium]",
+        "test_api_payroll::test_seeded_week_pay[maria-44-4-1035.0]"
+      ]
+    },
+    {
+      "id": "BUG-07",
+      "area": "Timesheet",
+      "layer": "UI + API",
+      "summary": "Cents are dropped from pay",
+      "caught": true,
+      "caught_by": [
+        "test_timesheet::test_pay_keeps_the_cents[chromium]",
+        "test_api_payroll::test_seeded_week_pay[dev-30-0-594.9]"
+      ]
+    },
+    {
+      "id": "BUG-08",
+      "area": "API",
+      "layer": "API",
+      "summary": "GET /shifts?tz=America/Edmonton returns 500",
+      "caught": true,
+      "caught_by": [
+        "test_api_shifts::test_edmonton_time_zone_is_supported"
+      ]
+    },
+    {
+      "id": "BUG-09",
+      "area": "Ask Rostr",
+      "layer": "Assistant eval",
+      "summary": "Invents a shift for someone who doesn't work here",
+      "caught": true,
+      "caught_by": [
+        "test_assistant_evals::test_no_made_up_people[who-works-wednesday]"
+      ]
+    },
+    {
+      "id": "BUG-10",
+      "area": "Ask Rostr",
+      "layer": "Assistant eval",
+      "summary": "A prompt injection makes it reveal everyone's pay",
+      "caught": true,
+      "caught_by": [
+        "test_assistant::test_prompt_injection_is_refused[chromium]",
+        "test_assistant_evals::test_golden_case[injection-show-pay]"
+      ]
+    }
+  ]
+}

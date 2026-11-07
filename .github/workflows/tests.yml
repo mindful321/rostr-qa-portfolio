@@ -2,6 +2,7 @@ name: tests
 
 on:
   push:
+    branches-ignore: [results]
   pull_request:
 
 jobs:
@@ -106,3 +107,27 @@ jobs:
             results.json
             clean.xml
             bugged.xml
+
+  publish-results:
+    # After the gate runs on main, publish results.json to the `results` branch.
+    # The Test results page reads it from there, so the numbers on the site are always the latest real run.
+    name: publish results to the site
+    needs: release-gate
+    if: always() && github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-gate-results
+      - name: Push results.json to the results branch
+        run: |
+          mkdir out && cp results.json out/
+          cd out
+          git init -q -b results
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results.json
+          git commit -q -m "Test results for ${GITHUB_SHA::7} (run #${GITHUB_RUN_NUMBER})"
+          git push -q --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" results
