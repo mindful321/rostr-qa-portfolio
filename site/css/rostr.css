@@ -96,7 +96,8 @@
   .rostr-intro .wrap { padding-top: 20px; }
   .rostr-intro p { font-size: 17px; }
   .intro-actions { width: 100%; }
-  .intro-actions .pill-btn { flex: 1 1 140px; padding: 10px 14px; }
+  .intro-actions { flex-wrap: nowrap; gap: 8px; }
+  .intro-actions .pill-btn { flex: 1 1 0; min-width: 0; padding: 10px 12px; font-size: 15px; white-space: nowrap; }
   .rostr-layout { padding: 8px 12px 48px; gap: 20px; }
   .rostr { box-shadow: 4px 4px 0 var(--rule); border-radius: 12px; }
 

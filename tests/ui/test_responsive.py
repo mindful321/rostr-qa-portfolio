@@ -50,3 +50,14 @@ def test_every_tab_fits_a_phone_screen(page: Page, tab):
     # The tabs must sit on one row, not wrap onto a second line
     tops = {round(box["y"]) for box in (t.bounding_box() for t in page.get_by_role("tab").all())}
     assert len(tops) == 1, f"Tabs wrap onto {len(tops)} rows on a phone"
+
+
+@pytest.mark.parametrize("screen", ["iphone-13", "pixel-7"])
+def test_bug_mode_buttons_stay_on_one_line(page: Page, screen):
+    page.set_viewport_size(dict(zip(("width", "height"), SCREENS[screen])))
+    RostrApp(page).open()
+    for testid in ("bug-toggle", "spoiler-toggle"):
+        button = page.get_by_test_id(testid)
+        lines = button.evaluate("b => Math.round(b.getBoundingClientRect().height / parseFloat(getComputedStyle(b).lineHeight || 20))")
+        height = button.bounding_box()["height"]
+        assert height < 56, f"{testid} wraps onto more than one line on {screen} (height {height}px, ~{lines} lines)"
