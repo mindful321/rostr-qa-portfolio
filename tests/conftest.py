@@ -66,10 +66,9 @@ def signed_in_api(api) -> RostrApi:
 
 @pytest.fixture
 def rostr(page):
-    """The Rostr app, opened and signed in through the UI."""
+    """The Rostr app, opened (visitors are signed in automatically) with fresh demo data."""
     from pages.rostr_app import RostrApp
 
     app = RostrApp(page).open()
-    app.login_page.sign_in(DEMO_EMAIL, DEMO_PASSWORD)
     app.wait_until_signed_in()
     return app

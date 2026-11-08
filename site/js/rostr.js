@@ -87,6 +87,7 @@ function renderLogin(message = "") {
     const f = new FormData(e.target);
     const res = await api("/auth/login", { method: "POST", data: { email: f.get("email"), password: f.get("password") } });
     if (res.ok) {
+      remember(SIGNED_OUT_KEY, null);
       current = "schedule";
       return show("schedule");
     }
@@ -96,8 +97,35 @@ function renderLogin(message = "") {
 
 async function logout() {
   await api("/auth/logout", { method: "POST" });
+  remember(SIGNED_OUT_KEY, "1"); // stay on the login screen until they sign in again
   chat = [];
   renderLogin();
+}
+
+// Visitors land in the app already signed in as the demo manager. The login screen is still
+// there to test: Sign out, or open /demo#signin.
+const SIGNED_OUT_KEY = "rostr_signed_out";
+const DEMO_LOGIN = { email: "manager@rostr.demo", password: "password" };
+
+function remember(key, value) {
+  try {
+    if (value === null) sessionStorage.removeItem(key);
+    else sessionStorage.setItem(key, value);
+  } catch {
+    // storage can be blocked (private mode); the app still works, it just won't remember sign-out
+  }
+}
+
+function recall(key) {
+  try {
+    return sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function wantsLoginScreen() {
+  return location.hash === "#signin" || recall(SIGNED_OUT_KEY) === "1";
 }
 
 async function resetData() {
@@ -120,10 +148,10 @@ async function renderSchedule(notice) {
           const content = mine.length
             ? mine.map((s) => `<span class="chip" data-testid="shift">${esc(s.start)}–${esc(s.end)}</span>`).join("")
             : `<span class="muted">Off</span>`;
-          return `<td data-testid="cell-${emp.id}-${d.index}">${content}</td>`;
+          return `<td data-testid="cell-${emp.id}-${d.index}" data-label="${esc(d.label)}">${content}</td>`;
         })
         .join("");
-      return `<tr data-testid="row-${emp.id}"><td><b>${esc(emp.name)}</b></td>${cells}</tr>`;
+      return `<tr data-testid="row-${emp.id}"><td class="row-title"><b>${esc(emp.name)}</b></td>${cells}</tr>`;
     })
     .join("");
   body.innerHTML = `
@@ -133,7 +161,7 @@ async function renderSchedule(notice) {
     </div>
     <div data-notice></div>
     <div class="table-box">
-      <table class="tbl" data-testid="schedule-table">
+      <table class="tbl cards-on-phone" data-testid="schedule-table">
         <thead><tr><th>Employee</th>${days.map((d) => `<th data-testid="day-header">${esc(d.label)}</th>`).join("")}</tr></thead>
         <tbody>${rows}</tbody>
       </table>
@@ -223,15 +251,15 @@ async function renderTimesheet() {
     <h2>Timesheet &amp; payroll</h2>
     <div class="muted" style="padding:4px 0 16px">Pay period Nov 9 – 13 · overtime is 1.5× after 40 h</div>
     <div class="table-box">
-      <table class="tbl" data-testid="payroll-table">
+      <table class="tbl cards-on-phone" data-testid="payroll-table">
         <thead><tr><th>Employee</th><th>Hours</th><th>Rate</th><th>Overtime h</th><th>Gross pay</th></tr></thead>
         <tbody>
           ${rows
             .map(
-              (r) => `<tr data-testid="pay-${r.employeeId}"><td><b>${esc(r.employeeName)}</b></td><td data-testid="hours-${r.employeeId}">${r.hours}</td><td>${money(r.rate)}</td><td data-testid="ot-${r.employeeId}">${r.overtimeHours}</td><td data-testid="gross-${r.employeeId}"><b>${money(r.gross)}</b></td></tr>`,
+              (r) => `<tr data-testid="pay-${r.employeeId}"><td class="row-title"><b>${esc(r.employeeName)}</b></td><td data-label="Hours" data-testid="hours-${r.employeeId}">${r.hours}</td><td data-label="Rate">${money(r.rate)}</td><td data-label="Overtime h" data-testid="ot-${r.employeeId}">${r.overtimeHours}</td><td data-label="Gross pay" data-testid="gross-${r.employeeId}"><b>${money(r.gross)}</b></td></tr>`,
             )
             .join("")}
-          <tr class="total"><td>Total</td><td></td><td></td><td></td><td data-testid="pay-total">${money(total)}</td></tr>
+          <tr class="total"><td class="row-title">Total</td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td data-label="Gross pay" data-testid="pay-total">${money(total)}</td></tr>
         </tbody>
       </table>
     </div>`;
@@ -329,8 +357,11 @@ spoilerToggle.addEventListener("click", () => {
 async function start() {
   renderBugMode();
   const me = await api("/auth/me");
-  if (me.ok) show("schedule");
-  else renderLogin();
+  if (me.ok) return show("schedule");
+  if (wantsLoginScreen()) return renderLogin();
+  const auto = await api("/auth/login", { method: "POST", data: DEMO_LOGIN });
+  if (auto.ok) return show("schedule");
+  renderLogin();
 }
 
 start();
