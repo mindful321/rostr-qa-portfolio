@@ -90,41 +90,40 @@
       <section>
         <h2>Bug-catch matrix</h2>
         <p class="intro">The same suite runs twice. A test that passes on the clean app and fails on the bugged one proves it actually guards against that regression.</p>
-        <div class="table-card" tabindex="0" role="region" aria-label="Bug-catch matrix (scrollable)">
-          <table class="m" data-testid="bug-matrix">
-            <thead><tr><th>#</th><th>PLANTED BUG</th><th>SCREEN</th><th>LAYER</th><th>CAUGHT BY</th><th>CLEAN</th><th>BUGGED</th></tr></thead>
-            <tbody data-matrix><tr><td colspan="7">Loading…</td></tr></tbody>
+        <div class="table-card" tabindex="0" role="region" aria-label="Bug-catch matrix">
+          <table class="m cards-on-phone" data-testid="bug-matrix">
+            <thead><tr><th class="num-col">#</th><th>PLANTED BUG</th><th>SCREEN</th><th>LAYER</th><th>CLEAN</th><th>BUG MODE</th></tr></thead>
+            <tbody data-matrix><tr><td colspan="6">Loading…</td></tr></tbody>
           </table>
         </div>
       </section>
 
-      <section class="two-col">
-        <div>
-          <h2>Risk map</h2>
-          <p class="intro">Where a bug would hurt most decides where testing goes deepest.</p>
-          <div class="table-card" tabindex="0" role="region" aria-label="Risk map (scrollable)">
-            <table class="m" data-testid="risk-map">
-              <thead><tr><th>AREA</th><th>RISK</th><th>WHY</th><th>HOW IT&#39;S TESTED</th></tr></thead>
-              <tbody>
-                <tr><td>Payroll</td><td><span class="pill high">High</span></td><td>Wrong pay = real money</td><td>Unit + API + UI, every push</td></tr>
-                <tr><td>Ask Rostr (AI)</td><td><span class="pill high">High</span></td><td>Can leak data or make things up</td><td>Eval-style tests, golden dataset</td></tr>
-                <tr><td>Login</td><td><span class="pill high">High</span></td><td>Security</td><td>UI + API, negative cases</td></tr>
-                <tr><td>Time off</td><td><span class="pill medium">Medium</span></td><td>Balances must add up</td><td>API + database checks</td></tr>
-                <tr><td>Schedule</td><td><span class="pill medium">Medium</span></td><td>Overlaps, time zones</td><td>UI + API</td></tr>
-                <tr><td>Look &amp; layout</td><td><span class="pill low">Low</span></td><td>Annoying, not costly</td><td>axe scan + quick manual pass</td></tr>
-              </tbody>
-            </table>
-          </div>
+      <section>
+        <h2>Risk map</h2>
+        <p class="intro">Where a bug would hurt most decides where testing goes deepest.</p>
+        <div class="table-card" tabindex="0" role="region" aria-label="Risk map">
+          <table class="m cards-on-phone" data-testid="risk-map">
+            <thead><tr><th>AREA</th><th>RISK</th><th>WHY</th><th>HOW IT&#39;S TESTED</th></tr></thead>
+            <tbody>
+              <tr><td class="row-title">Payroll</td><td data-label="Risk"><span class="pill high">High</span></td><td data-label="Why">Wrong pay = real money</td><td data-label="How it's tested">Unit + API + UI, every push</td></tr>
+              <tr><td class="row-title">Ask Rostr (AI)</td><td data-label="Risk"><span class="pill high">High</span></td><td data-label="Why">Can leak data or make things up</td><td data-label="How it's tested">Eval-style tests, golden dataset</td></tr>
+              <tr><td class="row-title">Login</td><td data-label="Risk"><span class="pill high">High</span></td><td data-label="Why">Security</td><td data-label="How it's tested">UI + API, negative cases</td></tr>
+              <tr><td class="row-title">Time off</td><td data-label="Risk"><span class="pill medium">Medium</span></td><td data-label="Why">Balances must add up</td><td data-label="How it's tested">API + database checks</td></tr>
+              <tr><td class="row-title">Schedule</td><td data-label="Risk"><span class="pill medium">Medium</span></td><td data-label="Why">Overlaps, time zones</td><td data-label="How it's tested">UI + API</td></tr>
+              <tr><td class="row-title">Look &amp; layout</td><td data-label="Risk"><span class="pill low">Low</span></td><td data-label="Why">Annoying, not costly</td><td data-label="How it's tested">axe scan + quick manual pass</td></tr>
+            </tbody>
+          </table>
         </div>
-        <div>
-          <h2>Golden dataset</h2>
-          <p class="intro">Questions with known right answers. Ask Rostr is scored against them on every run.</p>
-          <div class="table-card" tabindex="0" role="region" aria-label="Golden dataset (scrollable)">
-            <table class="m" data-testid="golden-dataset">
-              <thead><tr><th>QUESTION</th><th>EXPECTED</th><th>CHECK</th></tr></thead>
-              <tbody data-golden><tr><td colspan="3">Loading…</td></tr></tbody>
-            </table>
-          </div>
+      </section>
+
+      <section>
+        <h2>Golden dataset</h2>
+        <p class="intro">Questions with known right answers. Ask Rostr is scored against every one of them on every run, including questions that try to trick it.</p>
+        <div class="table-card" tabindex="0" role="region" aria-label="Golden dataset">
+          <table class="m cards-on-phone" data-testid="golden-dataset">
+            <thead><tr><th>QUESTION</th><th>EXPECTED ANSWER</th><th>WHAT IT CHECKS</th></tr></thead>
+            <tbody data-golden><tr><td colspan="3">Loading…</td></tr></tbody>
+          </table>
         </div>
       </section>
 

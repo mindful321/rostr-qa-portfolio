@@ -37,7 +37,48 @@
 .m .pass { color: var(--sage); font-weight: 700; }
 .m .caught { color: var(--coral-dark); font-weight: 700; }
 .m .missed { color: #fff; background: var(--coral-dark); font-weight: 700; border-radius: 4px; padding: 2px 6px; }
-.m td.wrap { white-space: normal; min-width: 220px; }
+/* Text cells wrap and line up with the rest of their row.
+   (They used to share the class name "wrap" with the page container, which pushed them down.) */
+.m td.cell-text { white-space: normal; }
+.m .num-col { width: 3.5em; color: var(--muted); }
+.bug-summary { font-weight: 600; color: var(--ink); }
+.caught-line { font-size: 13px; color: var(--muted); padding-top: 4px; overflow-wrap: anywhere; }
+.caught-line code { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+.caught-line .more { white-space: nowrap; cursor: help; border-bottom: 1px dotted var(--muted); }
+[data-testid=bug-matrix] td.cell-text { min-width: 260px; }
+
+/* Golden dataset */
+[data-testid=golden-dataset] td.cell-text:first-child { width: 34%; }
+[data-testid=golden-dataset] td.cell-text { line-height: 1.5; }
+.m tr.group-row th { background: var(--paper-2); color: var(--ink); font-family: var(--serif); font-size: 18px; font-weight: 600; text-transform: none; padding: 10px 14px; border-bottom: 1px solid var(--rule); border-top: 2px solid var(--ink); }
+.m tbody tr.group-row:first-child th { border-top: 0; }
+.group-row .count { font-family: var(--sans); font-size: 13px; color: var(--muted); font-weight: 600; margin-left: 6px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 13px; font-weight: 600; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink-2); white-space: nowrap; }
+.tag.tag-red { background: var(--coral-tint); color: #8a2e17; border-color: #e8a58f; }
+.tag.tag-amber { background: #fbf3d9; color: #5c3d0a; border-color: #e6d6a6; }
+.tag.tag-green { background: var(--sage-tint); color: var(--sage-dark); border-color: #a9c7b6; }
+
+/* Phones: each table row becomes a card (label on the left, value on the right) */
+@media (max-width: 640px) {
+  .results .table-card:has(.cards-on-phone) { border: 0; background: transparent; padding: 0; overflow: visible; }
+  .cards-on-phone thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .cards-on-phone, .cards-on-phone tbody, .cards-on-phone tr, .cards-on-phone td { display: block; width: 100%; }
+  .cards-on-phone tr { background: var(--card); border: 2px solid var(--ink); border-radius: 12px; padding: 6px 14px; }
+  .cards-on-phone tr + tr { margin-top: 10px; }
+  .cards-on-phone td { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--rule); white-space: normal; min-width: 0 !important; width: 100% !important; }
+  .cards-on-phone td:last-child { border-bottom: 0; }
+  .cards-on-phone td::before { content: attr(data-label); color: var(--muted); font-size: 13px; font-weight: 600; flex: 0 0 auto; padding-top: 2px; }
+  .cards-on-phone td.row-title { display: block; font-size: 16px; }
+  .cards-on-phone td.row-title::before, .cards-on-phone td.num-col { display: none; }
+  .cards-on-phone td > :not(.tags), .cards-on-phone td .tags { text-align: right; justify-content: flex-end; }
+  .cards-on-phone td.row-title, .cards-on-phone td.row-title > * { text-align: left; }
+  /* Long text (like an expected answer) goes under its label instead of beside it */
+  .cards-on-phone td.cell-text[data-label] { display: block; text-align: left; }
+  .cards-on-phone td.cell-text[data-label]::before { display: block; padding: 0 0 4px; }
+  .cards-on-phone tr.group-row { background: transparent; border: 0; padding: 14px 0 2px; }
+  .cards-on-phone tr.group-row th { display: block; background: transparent; border: 0; padding: 0; font-size: 20px; }
+}
 .pill { font-weight: 700; font-size: 14px; padding: 2px 10px; border-radius: 999px; border: 2px solid var(--ink); }
 .pill.high { background: var(--coral-tint); color: #8a2e17; }
 .pill.medium { background: #fbf3d9; color: #5c3d0a; }
