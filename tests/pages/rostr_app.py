@@ -110,7 +110,14 @@ class RostrApp:
         self.assistant = AssistantPage(page)
 
     def open(self):
+        """Visitors land in the app already signed in as the demo manager."""
         self.page.goto("/demo")
+        return self
+
+    def open_login(self):
+        """/demo#signin skips the automatic sign-in and shows the login screen."""
+        self.page.goto("/demo#signin")
+        expect(self.login_page.form).to_be_visible()
         return self
 
     def wait_until_signed_in(self):

@@ -90,3 +90,59 @@
 .spoilers ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.5; }
 .spoilers a { display: inline-block; padding-top: 12px; font-weight: 700; color: var(--coral-dark); }
 @media (prefers-reduced-motion: reduce) { .spoilers, .bug-stamp { transform: none; } }
+
+/* ---------- Phones (up to 640px wide) ---------- */
+@media (max-width: 640px) {
+  .rostr-intro .wrap { padding-top: 20px; }
+  .rostr-intro p { font-size: 17px; }
+  .intro-actions { width: 100%; }
+  .intro-actions .pill-btn { flex: 1 1 140px; padding: 10px 14px; }
+  .rostr-layout { padding: 8px 12px 48px; gap: 20px; }
+  .rostr { box-shadow: 4px 4px 0 var(--rule); border-radius: 12px; }
+
+  /* App header: logo + compact actions on one line, tabs as an even 4-up row */
+  .rostr-nav { padding: 10px 12px; gap: 10px; }
+  .rostr-nav-left { width: 100%; gap: 10px; flex-direction: column; align-items: stretch; }
+  .rostr-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+  .tab { padding: 6px 4px; font-size: 13px; min-height: 40px; text-align: center; }
+  .rostr-user { width: 100%; justify-content: space-between; gap: 8px; }
+  .rostr-user > span { display: none; } /* the email is on the login screen anyway */
+  .rostr-user .btn-small { flex: 1 1 0; min-height: 40px; }
+
+  .rostr-body { padding: 14px 12px; min-height: 420px; }
+  .rostr-body h2 { font-size: 19px; }
+  .row-between { padding-bottom: 12px; }
+  .row-between .btn-app { width: 100%; }
+
+  /* Tables become one card per row: label on the left, value on the right */
+  .table-box:has(.cards-on-phone) { border: 0; background: transparent; overflow: visible; }
+  .cards-on-phone thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .cards-on-phone, .cards-on-phone tbody, .cards-on-phone tr, .cards-on-phone td { display: block; width: 100%; }
+  .cards-on-phone tr { background: var(--r-panel); border: 1px solid var(--r-border); border-radius: 10px; padding: 4px 12px; }
+  .cards-on-phone tr + tr { margin-top: 10px; }
+  .cards-on-phone td { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 8px 0; white-space: normal; }
+  .cards-on-phone td::before { content: attr(data-label); color: var(--r-muted); font-size: 13px; padding-top: 3px; flex: 0 0 auto; }
+  .cards-on-phone td.row-title { font-size: 16px; border-bottom: 1px solid var(--r-border); }
+  .cards-on-phone td.row-title::before, .cards-on-phone td.empty { display: none; }
+  .cards-on-phone td:last-child { border-bottom: 0; }
+  .cards-on-phone td > div, .cards-on-phone td .chip { text-align: right; }
+  .cards-on-phone .total { background: var(--r-head); }
+
+  /* Add-shift form: two columns, full-width button */
+  .add-shift { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 12px; }
+  .add-shift select, .add-shift input { width: 100%; min-width: 0; }
+  .add-shift .btn-app { grid-column: 1 / -1; min-height: 44px; }
+
+  /* Time off: decision buttons share the row */
+  .request { padding: 14px; }
+  .request > div:last-child:not(.status) { width: 100%; }
+  .request .btn-approve, .request .btn-deny { flex: 1 1 0; }
+
+  /* Ask Rostr */
+  .suggestions button { width: 100%; text-align: left; border-radius: 12px; }
+  .ask-form .btn-app { flex: 0 0 auto; }
+  .bubble-q, .bubble-a { max-width: 92%; }
+
+  .netlog { padding: 10px 12px; }
+  .netlog-line span:last-child { overflow-wrap: anywhere; }
+}

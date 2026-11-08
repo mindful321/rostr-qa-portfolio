@@ -26,15 +26,13 @@ def test_static_pages(page: Page, path):
 
 
 def test_rostr_login_screen(page: Page):
-    RostrApp(page).open()
-    page.get_by_test_id("login-form").wait_for()
+    RostrApp(page).open_login()
     assert_no_violations(page, "Rostr login")
 
 
 @pytest.mark.parametrize("screen", ["schedule", "timeoff", "timesheet", "assistant"])
 def test_rostr_screens(page: Page, screen):
     app = RostrApp(page).open()
-    app.login_page.sign_in(DEMO_EMAIL, DEMO_PASSWORD)
     app.wait_until_signed_in()
     app.go_to(screen)
     page.wait_for_load_state("networkidle")

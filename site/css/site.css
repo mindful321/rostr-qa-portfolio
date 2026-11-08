@@ -112,7 +112,7 @@ img, svg { max-width: 100%; }
 .site-footer .wrap { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: flex-end; padding-top: 56px; padding-bottom: 56px; }
 .site-footer a { color: var(--paper); }
 .footer-hand { font-family: var(--hand); font-size: 26px; padding-bottom: 6px; }
-.footer-email { font-family: var(--serif); font-size: clamp(26px, 3.4vw, 40px); font-weight: 600; overflow-wrap: anywhere; }
+.footer-email { font-family: var(--serif); font-size: clamp(18px, 5.4vw, 40px); font-weight: 600; overflow-wrap: anywhere; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 24px; font-weight: 700; }
 
 /* Simple placeholder pages */
