@@ -58,14 +58,17 @@ function renderResults({ data, source }) {
   $("[data-matrix]").innerHTML = bugs
     .map((b, i) => {
       const catcher = b.caught_by[0];
+      const more = b.caught_by.length - 1;
+      const caughtLine = catcher
+        ? `caught by <code>${esc(shortTest(catcher))}</code>${more > 0 ? ` <span class="more" title="${esc([...new Set(b.caught_by.map(shortTest))].join(", "))}">+${more} more</span>` : ""}`
+        : "not caught by any test";
       return `<tr data-testid="matrix-row">
-        <td>${String(i + 1).padStart(2, "0")}</td>
-        <td class="wrap">${esc(b.summary)}</td>
-        <td>${esc(b.area)}</td>
-        <td>${esc(b.layer)}</td>
-        <td class="mono">${catcher ? esc(shortTest(catcher)) : "–"}${b.caught_by.length > 1 ? ` <span title="${esc(b.caught_by.map(shortTest).join(", "))}">+${b.caught_by.length - 1}</span>` : ""}</td>
-        <td class="pass">${cleanOk ? "PASS" : "–"}</td>
-        <td>${b.caught ? '<span class="caught">FAIL ✓</span>' : '<span class="missed">MISSED</span>'}</td>
+        <td class="num-col" data-label="#">${String(i + 1).padStart(2, "0")}</td>
+        <td class="cell-text row-title"><div class="bug-summary">${esc(b.summary)}</div><div class="caught-line" data-testid="caught-line">${caughtLine}</div></td>
+        <td data-label="Screen">${esc(b.area)}</td>
+        <td data-label="Layer">${esc(b.layer)}</td>
+        <td data-label="Clean" class="pass">${cleanOk ? "PASS" : "–"}</td>
+        <td data-label="Bug mode">${b.caught ? '<span class="caught">FAIL ✓</span>' : '<span class="missed">MISSED</span>'}</td>
       </tr>`;
     })
     .join("");
@@ -77,10 +80,25 @@ function renderResults({ data, source }) {
       : `Showing a saved snapshot from ${esc(when)} (live results unavailable right now).`;
 }
 
+const GROUP_ORDER = ["Schedule & time off", "Prompt injection", "Off-topic & unknown"];
+const TAG_STYLE = { "prompt injection": "tag-red", "no hallucination": "tag-amber", correctness: "tag-green" };
+
 function renderGolden(dataset) {
-  $("[data-golden]").innerHTML = dataset.cases
+  const groups = GROUP_ORDER.map((g) => ({ name: g, cases: dataset.cases.filter((c) => c.group === g) }))
+    .concat([{ name: "Other", cases: dataset.cases.filter((c) => !GROUP_ORDER.includes(c.group)) }])
+    .filter((g) => g.cases.length);
+  $("[data-golden]").innerHTML = groups
     .map(
-      (c) => `<tr data-testid="golden-row"><td class="wrap">${esc(c.question)}</td><td class="wrap">${esc(c.must_include.join("; "))}</td><td class="mono wrap">${esc(c.check)}</td></tr>`,
+      (g) => `<tr class="group-row" data-testid="golden-group"><th colspan="3" scope="colgroup">${esc(g.name)} <span class="count">${g.cases.length}</span></th></tr>` +
+        g.cases
+          .map(
+            (c) => `<tr data-testid="golden-row">
+              <td class="cell-text row-title">${esc(c.question)}</td>
+              <td class="cell-text" data-label="Expected answer">${esc(c.expected ?? c.must_include.join(" · "))}</td>
+              <td data-label="What it checks"><div class="tags">${(c.tags ?? [c.check]).map((t) => `<span class="tag ${TAG_STYLE[t] ?? ""}">${esc(t)}</span>`).join("")}</div></td>
+            </tr>`,
+          )
+          .join(""),
     )
     .join("");
 }
