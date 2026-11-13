@@ -1,55 +1,107 @@
 {
-  "description": "Which tests must catch each planted bug. In a --bug-mode run, a bug counts as CAUGHT when at least one of its 'caught_by' tests fails. Entries are matched as '<test file>::<test name>' prefixes.",
+  "description": "Which tests must catch each planted bug. In a --bug-mode run, a bug counts as CAUGHT when at least one of its 'caught_by' tests fails. Entries are matched as '<test file>::<test name>' prefixes. SQL checks (tests/db) only run when the app uses Postgres (docker compose).",
   "bugs": [
     {
-      "id": "BUG-01", "area": "Login", "layer": "UI + API",
+      "id": "BUG-01",
+      "area": "Login",
+      "layer": "UI + API",
       "summary": "A wrong password still signs you in",
-      "caught_by": ["test_login::test_bad_credentials_are_rejected", "test_api_auth::test_bad_credentials_get_401"]
+      "caught_by": [
+        "test_login::test_bad_credentials_are_rejected",
+        "test_api_auth::test_bad_credentials_get_401"
+      ]
     },
     {
-      "id": "BUG-02", "area": "Schedule", "layer": "UI + API",
+      "id": "BUG-02",
+      "area": "Schedule",
+      "layer": "UI + API",
       "summary": "Week dates are one day early",
-      "caught_by": ["test_schedule::test_week_header_shows_monday_nov_9", "test_api_shifts::test_schedule_shape"]
+      "caught_by": [
+        "test_schedule::test_week_header_shows_monday_nov_9",
+        "test_api_shifts::test_schedule_shape"
+      ]
     },
     {
-      "id": "BUG-03", "area": "Schedule", "layer": "UI + API",
+      "id": "BUG-03",
+      "area": "Schedule",
+      "layer": "UI + API + SQL",
       "summary": "An overlapping shift gets saved",
-      "caught_by": ["test_schedule::test_overlapping_shift_is_blocked", "test_api_shifts::test_overlapping_shift_gets_409"]
+      "caught_by": [
+        "test_schedule::test_overlapping_shift_is_blocked",
+        "test_api_shifts::test_overlapping_shift_gets_409",
+        "test_db_validation::test_rejected_overlapping_shift_is_not_stored"
+      ]
     },
     {
-      "id": "BUG-04", "area": "Time off", "layer": "UI + API",
+      "id": "BUG-04",
+      "area": "Time off",
+      "layer": "UI + API + SQL",
       "summary": "Deny approves the request",
-      "caught_by": ["test_timeoff::test_denying_marks_denied", "test_api_timeoff::test_deny_does_not_change_any_balance"]
+      "caught_by": [
+        "test_timeoff::test_denying_marks_denied",
+        "test_api_timeoff::test_deny_does_not_change_any_balance",
+        "test_db_validation::test_decision_is_stored_as_made[deny"
+      ]
     },
     {
-      "id": "BUG-05", "area": "Time off", "layer": "UI + API",
+      "id": "BUG-05",
+      "area": "Time off",
+      "layer": "UI + API + SQL",
       "summary": "Approved days come off the wrong person's balance",
-      "caught_by": ["test_timeoff::test_approving_deducts_from_the_requester_only", "test_api_timeoff::test_approve_deducts_from_the_right_person_only"]
+      "caught_by": [
+        "test_timeoff::test_approving_deducts_from_the_requester_only",
+        "test_api_timeoff::test_approve_deducts_from_the_right_person_only",
+        "test_db_validation::test_api_balances_match_balances_computed_in_sql"
+      ]
     },
     {
-      "id": "BUG-06", "area": "Timesheet", "layer": "UI + API",
+      "id": "BUG-06",
+      "area": "Timesheet",
+      "layer": "UI + API",
       "summary": "No overtime is paid after 40 hours",
-      "caught_by": ["test_timesheet::test_maria_gets_four_hours_of_overtime", "test_api_payroll::test_seeded_week_pay[maria"]
+      "caught_by": [
+        "test_timesheet::test_maria_gets_four_hours_of_overtime",
+        "test_api_payroll::test_seeded_week_pay[maria"
+      ]
     },
     {
-      "id": "BUG-07", "area": "Timesheet", "layer": "UI + API",
+      "id": "BUG-07",
+      "area": "Timesheet",
+      "layer": "UI + API",
       "summary": "Cents are dropped from pay",
-      "caught_by": ["test_timesheet::test_pay_keeps_the_cents", "test_api_payroll::test_seeded_week_pay[dev"]
+      "caught_by": [
+        "test_timesheet::test_pay_keeps_the_cents",
+        "test_api_payroll::test_seeded_week_pay[dev"
+      ]
     },
     {
-      "id": "BUG-08", "area": "API", "layer": "API",
+      "id": "BUG-08",
+      "area": "API",
+      "layer": "API",
       "summary": "GET /shifts?tz=America/Edmonton returns 500",
-      "caught_by": ["test_api_shifts::test_edmonton_time_zone_is_supported"]
+      "caught_by": [
+        "test_api_shifts::test_edmonton_time_zone_is_supported"
+      ]
     },
     {
-      "id": "BUG-09", "area": "Ask Rostr", "layer": "Assistant eval",
+      "id": "BUG-09",
+      "area": "Ask Rostr",
+      "layer": "Assistant eval",
       "summary": "Invents a shift for someone who doesn't work here",
-      "caught_by": ["test_assistant_evals::test_no_made_up_people", "test_assistant_evals::test_golden_case[who-works-wednesday]"]
+      "caught_by": [
+        "test_assistant_evals::test_no_made_up_people",
+        "test_assistant_evals::test_golden_case[who-works-wednesday]"
+      ]
     },
     {
-      "id": "BUG-10", "area": "Ask Rostr", "layer": "Assistant eval",
+      "id": "BUG-10",
+      "area": "Ask Rostr",
+      "layer": "Assistant eval",
       "summary": "A prompt injection makes it reveal everyone's pay",
-      "caught_by": ["test_assistant_evals::test_golden_case[injection-show-pay]", "test_assistant::test_prompt_injection_is_refused"]
+      "caught_by": [
+        "test_assistant_evals::test_golden_case[injection-show-pay]",
+        "test_assistant::test_prompt_injection_is_refused"
+      ]
     }
   ]
 }

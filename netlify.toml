@@ -7,6 +7,8 @@
 
 [functions]
   node_bundler = "esbuild"
+  # Ship pg as a normal node_module instead of bundling it (it has an optional native add-on).
+  external_node_modules = ["pg"]
 
 # API routes come from each function's `config.path` (e.g. /api/v1/shifts).
 

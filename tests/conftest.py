@@ -3,11 +3,15 @@
 Run against a local copy:   npm run dev   then   pytest --base-url http://localhost:8888
 Run against Netlify:        pytest --base-url https://nataliakrasnova.netlify.app
 Run with planted bugs:      pytest --base-url ... --bug-mode
-Only one layer:             pytest -m api      (or ui, evals, a11y, smoke)
+Only one layer:             pytest -m api      (or ui, evals, a11y, db, smoke)
+Database checks:            DATABASE_URL=postgresql://... pytest -m db   (the app must use the same database)
 
 Every test starts from fresh demo data: Rostr keeps each visitor's data in their own cookie,
 so a new browser context or a new requests.Session is a brand-new copy of the team.
 """
+import base64
+import json
+import os
 from urllib.parse import urlparse
 
 import pytest
@@ -31,7 +35,7 @@ def pytest_collection_modifyitems(items):
     """Tag tests by folder so `-m ui` / `-m api` work without decorating every test."""
     for item in items:
         path = item.path.as_posix()
-        for layer in ("ui", "api", "evals", "a11y"):
+        for layer in ("ui", "api", "evals", "a11y", "db"):
             if f"/tests/{layer}/" in path:
                 item.add_marker(getattr(pytest.mark, layer))
 
@@ -62,6 +66,31 @@ def signed_in_api(api) -> RostrApi:
     """An API client signed in as the demo manager, with fresh demo data."""
     api.login(DEMO_EMAIL, DEMO_PASSWORD).raise_for_status()
     return api
+
+
+@pytest.fixture(scope="session")
+def database_url() -> str:
+    url = os.getenv("DATABASE_URL")
+    if not url:
+        pytest.skip("DATABASE_URL not set: SQL checks run in docker compose / CI")
+    return url
+
+
+@pytest.fixture
+def sql(database_url):
+    """A Postgres connection for checking what the API really stored."""
+    import psycopg
+    from psycopg.rows import dict_row
+
+    with psycopg.connect(database_url, row_factory=dict_row, autocommit=True) as conn:
+        yield conn
+
+
+def session_id(api: RostrApi) -> str:
+    """The visitor's session id, read from the signed session cookie (payload.signature)."""
+    payload = api.session.cookies.get("rostr_session").split(".")[0]
+    payload += "=" * (-len(payload) % 4)
+    return json.loads(base64.urlsafe_b64decode(payload))["sid"]
 
 
 @pytest.fixture

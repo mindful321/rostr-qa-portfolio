@@ -19,7 +19,8 @@ Live site: https://nataliakrasnova.netlify.app (coming soon)
 | --- | --- |
 | Pages | Plain HTML + CSS (`site/`) |
 | API | Netlify Functions in TypeScript (`netlify/functions/`) |
-| Tests | Python: Pytest, Playwright, requests (`tests/`) |
+| Tests | Python: Pytest, Playwright, requests, psycopg (`tests/`) |
+| Database | Postgres via Docker Compose (`db/schema.sql`); cookie storage on the live demo |
 | CI | GitHub Actions (`.github/workflows/`) |
 
 ## Test suite
@@ -49,6 +50,16 @@ pytest --base-url http://localhost:8888            # everything
 pytest -m api --base-url http://localhost:8888     # one layer: ui, api, evals, a11y, smoke
 npm run test:unit                                  # TypeScript unit tests
 ```
+
+## Run everything in Docker (with Postgres)
+
+```bash
+docker compose up --build --abort-on-container-exit --exit-code-from tests
+```
+
+This starts three containers: **Postgres**, the **Rostr app** (with `DATABASE_URL` set, so visitor data is stored in Postgres instead of the signed cookie) and the **test suite**, including the SQL checks in `tests/db/` that query the database directly after each API action (stored shifts, rejected overlaps leave no row, decisions, balances computed in SQL, reset isolation). The schema is in `db/schema.sql`. CI runs the same command in the `docker compose` job.
+
+The live Netlify demo has no database: each visitor's changes travel in a signed cookie.
 
 ## Bug mode and the release gate
 

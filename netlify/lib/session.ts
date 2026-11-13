@@ -6,6 +6,8 @@ export type Decision = "approved" | "denied";
 export type SessionState = {
   v: 1;
   user: string;
+  /** Session id: the row key in the database when DATABASE_URL is set. */
+  sid: string;
   added: Shift[];
   decisions: Record<string, Decision>;
 };
@@ -42,7 +44,7 @@ async function hmac(data: string): Promise<string> {
 }
 
 export function newSession(user: string): SessionState {
-  return { v: 1, user, added: [], decisions: {} };
+  return { v: 1, user, sid: crypto.randomUUID(), added: [], decisions: {} };
 }
 
 export function readCookie(req: Request, name: string): string | undefined {
@@ -61,7 +63,9 @@ export async function readSession(req: Request): Promise<SessionState | null> {
   if (!payload || !sig || (await hmac(payload)) !== sig) return null;
   try {
     const state = JSON.parse(new TextDecoder().decode(fromB64url(payload)));
-    return state?.v === 1 ? (state as SessionState) : null;
+    if (state?.v !== 1) return null;
+    state.sid ??= crypto.randomUUID(); // cookies issued before the database existed have no id
+    return state as SessionState;
   } catch {
     return null;
   }

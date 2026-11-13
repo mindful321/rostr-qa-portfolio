@@ -1,0 +1,10 @@
+node_modules
+.venv
+.git
+.github
+.netlify
+**/__pycache__
+.pytest_cache
+test-results
+site/data/golden_dataset.json
+*.xml
