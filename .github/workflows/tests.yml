@@ -24,6 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - run: npm ci --no-audit --no-fund   # the dev server needs the pg package
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -49,6 +50,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - run: npm ci --no-audit --no-fund   # the dev server needs the pg package
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -96,6 +98,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - run: npm ci --no-audit --no-fund   # the dev server needs the pg package
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
