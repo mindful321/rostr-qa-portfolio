@@ -82,7 +82,7 @@ jobs:
         run: docker compose up --build --abort-on-container-exit --exit-code-from tests
       - name: Show app logs on failure
         if: failure()
-        run: docker compose logs app db
+        run: docker compose logs rostr db
       - name: Keep the JUnit report
         if: always()
         uses: actions/upload-artifact@v4

@@ -3,7 +3,7 @@
 #   docker compose up --build --abort-on-container-exit --exit-code-from tests
 #
 # runs every test (including the SQL checks) against the app backed by a real Postgres,
-# then exits with the test suite's exit code. `docker compose up db app` just runs the app
+# then exits with the test suite's exit code. `docker compose up db rostr` just runs the app
 # on http://localhost:8888.
 services:
   db:
@@ -18,7 +18,8 @@ services:
       timeout: 3s
       retries: 30
 
-  app:
+  # Not called "app": Chrome treats any host ending in .app (and "app" itself) as HTTPS-only.
+  rostr:
     build: .
     environment:
       DATABASE_URL: postgresql://rostr:rostr@db:5432/rostr
@@ -37,9 +38,9 @@ services:
       DATABASE_URL: postgresql://rostr:rostr@db:5432/rostr
     command: >
       pytest -m "api or evals or db or ui or a11y" --browser chromium
-      --base-url http://app:8888 --junitxml=/results/clean.xml
+      --base-url http://rostr:8888 --junitxml=/results/clean.xml
     volumes:
       - ./test-results:/results
     depends_on:
-      app:
+      rostr:
         condition: service_healthy
