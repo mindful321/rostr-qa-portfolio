@@ -82,8 +82,8 @@
         </div>
         <div class="card shadow-coral tilt-r">
           <div class="label">COVERAGE</div>
-          <div class="num">5 layers</div>
-          <div class="sub">UI · API · unit · accessibility · assistant evals</div>
+          <div class="num">6 layers</div>
+          <div class="sub">UI · API · SQL · unit · accessibility · assistant &amp; RAG evals</div>
         </div>
       </div>
 
@@ -106,9 +106,9 @@
             <thead><tr><th>AREA</th><th>RISK</th><th>WHY</th><th>HOW IT&#39;S TESTED</th></tr></thead>
             <tbody>
               <tr><td class="row-title">Payroll</td><td data-label="Risk"><span class="pill high">High</span></td><td data-label="Why">Wrong pay = real money</td><td data-label="How it's tested">Unit + API + UI, every push</td></tr>
-              <tr><td class="row-title">Ask Rostr (AI)</td><td data-label="Risk"><span class="pill high">High</span></td><td data-label="Why">Can leak data or make things up</td><td data-label="How it's tested">Eval-style tests, golden dataset</td></tr>
+              <tr><td class="row-title">Ask Rostr (AI)</td><td data-label="Risk"><span class="pill high">High</span></td><td data-label="Why">Can leak data or make things up</td><td data-label="How it's tested">Golden dataset, RAG retrieval and grounding evals</td></tr>
               <tr><td class="row-title">Login</td><td data-label="Risk"><span class="pill high">High</span></td><td data-label="Why">Security</td><td data-label="How it's tested">UI + API, negative cases</td></tr>
-              <tr><td class="row-title">Time off</td><td data-label="Risk"><span class="pill medium">Medium</span></td><td data-label="Why">Balances must add up</td><td data-label="How it's tested">API + database checks</td></tr>
+              <tr><td class="row-title">Time off</td><td data-label="Risk"><span class="pill medium">Medium</span></td><td data-label="Why">Balances must add up</td><td data-label="How it's tested">API + SQL checks in Postgres</td></tr>
               <tr><td class="row-title">Schedule</td><td data-label="Risk"><span class="pill medium">Medium</span></td><td data-label="Why">Overlaps, time zones</td><td data-label="How it's tested">UI + API</td></tr>
               <tr><td class="row-title">Look &amp; layout</td><td data-label="Risk"><span class="pill low">Low</span></td><td data-label="Why">Annoying, not costly</td><td data-label="How it's tested">axe scan + quick manual pass</td></tr>
             </tbody>
@@ -134,6 +134,8 @@
           <p><b>API:</b> Pytest + requests, schema validation, negative cases</p>
           <p><b>Unit:</b> payroll and overtime rules in TypeScript (node --test)</p>
           <p><b>Assistant evals:</b> Pytest against a golden dataset: correctness, hallucination and prompt-injection checks (DeepEval-ready)</p>
+          <p><b>RAG evals:</b> retrieval (right handbook document ranked first, never an outdated one) and grounding (every sentence of an answer appears in the passage it cites)</p>
+          <p><b>Database:</b> Postgres in Docker Compose; SQL checks confirm what the API actually stored</p>
           <p><b>Accessibility:</b> axe-core on every screen</p>
           <p><b>CI release gate:</b> GitHub Actions runs clean vs bugged; the release is blocked unless every planted bug is caught</p>
         </div>
@@ -151,18 +153,21 @@
         <h2>Repo layout</h2>
         <pre class="repo" tabindex="0" aria-label="Repository layout (scrollable)">tests/
   ui/          test_login.py  test_schedule.py  test_timeoff.py  test_timesheet.py
-               test_assistant.py  test_responsive.py  test_home.py
+               test_assistant.py  test_responsive.py  test_results.py  test_home.py
   api/         test_api_auth.py  test_api_shifts.py  test_api_timeoff.py
                test_api_payroll.py  test_api_smoke.py
-  evals/       test_assistant_evals.py  golden_dataset.json
+  evals/       test_assistant_evals.py  test_rag.py  golden_dataset.json
+  db/          test_db_validation.py                 # SQL checks against Postgres
   a11y/        test_axe.py
-  unit/        logic.test.ts
+  unit/        logic.test.ts  retrieval.test.ts
   pages/       home_page.py  rostr_app.py        # page objects
   support/     api_client.py
-  conftest.py                                     # base URL, --bug-mode, signed-in fixtures
+  conftest.py                                     # base URL, --bug-mode, DB and signed-in fixtures
   bug_catalog.json                                # which tests must catch each bug
+netlify/lib/   retrieval.ts (BM25 RAG)  handbook.ts  db.ts  bugs.ts
+db/schema.sql                                     # Postgres schema
+docker-compose.yml  Dockerfile  tests/Dockerfile  # db + app + test suite
 scripts/release_gate.py                           # GO / NO-GO
-netlify/functions/                                # the Rostr API (TypeScript)
 .github/workflows/tests.yml</pre>
       </section>
     </div>

@@ -89,7 +89,7 @@ jobs:
           path: test-results/
 
   release-gate:
-    name: release gate (clean must pass, bug mode must catch all 10 bugs)
+    name: release gate (clean must pass, bug mode must catch every planted bug)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,6 +1,6 @@
 # Rostr QA Portfolio
 
-Natalia Krasnova's portfolio site, and **Rostr**: a small workforce app (scheduling, time off, payroll, an assistant) with a **bug mode** that plants 10 real defects. A Python test suite runs against the app twice, once clean and once bugged, and acts as a **release gate**: the clean run must pass, and the bugged run must catch every planted bug.
+Natalia Krasnova's portfolio site, and **Rostr**: a small workforce app (scheduling, time off, payroll, an assistant) with a **bug mode** that plants 12 real defects. A Python test suite runs against the app twice, once clean and once bugged, and acts as a **release gate**: the clean run must pass, and the bugged run must catch every planted bug.
 
 Live site: https://nataliakrasnova.netlify.app (coming soon)
 
@@ -9,8 +9,8 @@ Live site: https://nataliakrasnova.netlify.app (coming soon)
 - [x] Home page
 - [x] Rostr app (clean): login, schedule, time off, timesheet, Ask Rostr
 - [x] Test suite: 141 Python tests (UI, API, assistant evals, accessibility) + 11 TypeScript unit tests
-- [x] Bug mode + release gate: 10 planted bugs, CI blocks the release unless every one is caught
-- [ ] Ask Rostr assistant + eval-style tests
+- [x] Bug mode + release gate: 12 planted bugs, CI blocks the release unless every one is caught
+- [x] Ask Rostr assistant + eval-style tests, with RAG over an employee handbook
 - [x] Live Test results page: CI publishes results.json to the `results` branch after every push to main; /results reads it (falls back to a snapshot)
 
 ## How it's built
@@ -63,7 +63,7 @@ The live Netlify demo has no database: each visitor's changes travel in a signed
 
 ## Bug mode and the release gate
 
-Switching on bug mode (the toggle on `/demo`, or `--bug-mode` in pytest) sets a `bug_mode=on` cookie, and Rostr plants 10 real defects. Each one is a small branch in the app code marked `PLANTED BUG-NN` (`netlify/lib/bugs.ts` lists them).
+Switching on bug mode (the toggle on `/demo`, or `--bug-mode` in pytest) sets a `bug_mode=on` cookie, and Rostr plants 12 real defects. Each one is a small branch in the app code marked `PLANTED BUG-NN` (`netlify/lib/bugs.ts` lists them).
 
 The **release gate** (`scripts/release_gate.py`, CI job `release gate`) runs the suite twice:
 

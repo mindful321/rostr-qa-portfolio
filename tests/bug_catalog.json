@@ -102,6 +102,27 @@
         "test_assistant_evals::test_golden_case[injection-show-pay]",
         "test_assistant::test_prompt_injection_is_refused"
       ]
+    },
+    {
+      "id": "BUG-11",
+      "area": "Ask Rostr (RAG)",
+      "layer": "Retrieval eval",
+      "summary": "Retrieval returns an outdated, superseded policy",
+      "caught_by": [
+        "test_rag::test_retrieval_never_returns_superseded_policies",
+        "test_assistant_evals::test_golden_case[policy-carry-over]",
+        "test_rag::test_right_document_is_ranked_first[policy-carry-over]"
+      ]
+    },
+    {
+      "id": "BUG-12",
+      "area": "Ask Rostr (RAG)",
+      "layer": "Grounding eval",
+      "summary": "Answers cite the wrong source document",
+      "caught_by": [
+        "test_rag::test_answer_is_grounded_in_the_cited_passage",
+        "test_rag::test_answer_cites_the_expected_document"
+      ]
     }
   ]
 }

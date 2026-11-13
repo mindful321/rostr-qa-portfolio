@@ -28,3 +28,17 @@ def test_answer_reflects_an_approval_made_in_the_app(rostr):
     rostr.go_to("assistant")
     rostr.assistant.ask("How many days off does Dev have left?")
     expect(rostr.assistant.last_answer()).to_contain_text("Dev P. has 6 days")
+
+
+def test_handbook_answer_shows_its_source(rostr):
+    rostr.go_to("assistant")
+    rostr.assistant.ask("How is overtime paid?")
+    expect(rostr.assistant.last_answer()).to_contain_text("1.5 times")
+    expect(rostr.page.get_by_test_id("chat-citation").last).to_have_text("Source: Overtime policy › Overtime pay")
+
+
+def test_question_outside_the_handbook_gets_no_made_up_answer(rostr):
+    rostr.go_to("assistant")
+    rostr.assistant.ask("What's the dress code?")
+    expect(rostr.assistant.last_answer()).to_contain_text("I can answer questions")
+    expect(rostr.page.get_by_test_id("chat-citation")).to_have_count(0)
