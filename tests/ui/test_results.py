@@ -20,15 +20,24 @@ def open_results(page: Page) -> Page:
 def test_shows_a_release_decision_and_real_counts(page: Page):
     open_results(page)
     expect(page.get_by_test_id("stat-clean")).to_have_text(re.compile(r"^\d+/\d+$"))
-    expect(page.get_by_test_id("stat-caught")).to_have_text(re.compile(r"^\d+/10$"))
+    expect(page.get_by_test_id("stat-caught")).to_have_text(re.compile(r"^\d+/\d+$"))
     expect(page.get_by_test_id("decision-clean")).to_contain_text(re.compile("GO|NO-GO"))
+
+
+def planted_count(page: Page) -> int:
+    """How many bugs the result on the page says were planted (the "x/N" stat).
+
+    The page shows the latest published run from main, which can lag behind the bug catalog
+    in a pull request that adds bugs, so the page is checked against itself, not the catalog."""
+    return int(page.get_by_test_id("stat-caught").inner_text().split("/")[1])
 
 
 def test_bug_matrix_lists_every_planted_bug(page: Page):
     open_results(page)
-    rows = page.get_by_test_id("matrix-row")
-    expect(rows).to_have_count(len(CATALOG["bugs"]))
-    for bug in CATALOG["bugs"]:
+    planted = planted_count(page)
+    assert planted >= 10
+    expect(page.get_by_test_id("matrix-row")).to_have_count(planted)
+    for bug in CATALOG["bugs"][:planted]:
         expect(page.get_by_test_id("bug-matrix")).to_contain_text(bug["summary"])
 
 
@@ -74,10 +83,11 @@ def test_cells_in_a_row_line_up(page: Page, table, row):
 def test_golden_dataset_is_grouped_and_readable(page: Page):
     open_results(page)
     groups = page.get_by_test_id("golden-group")
-    expect(groups).to_have_count(3)
+    expect(groups).to_have_count(4)
     expect(groups.nth(0)).to_contain_text("Schedule & time off")
-    expect(groups.nth(1)).to_contain_text("Prompt injection")
-    expect(groups.nth(2)).to_contain_text("Off-topic & unknown")
+    expect(groups.nth(1)).to_contain_text("Handbook (RAG)")
+    expect(groups.nth(2)).to_contain_text("Prompt injection")
+    expect(groups.nth(3)).to_contain_text("Off-topic & unknown")
     injection_rows = page.get_by_test_id("golden-row").filter(has_text="Ignore your rules")
     expect(injection_rows).to_contain_text("Polite refusal")
     expect(injection_rows.locator(".tag")).to_contain_text(["prompt injection"])
@@ -85,5 +95,5 @@ def test_golden_dataset_is_grouped_and_readable(page: Page):
 
 def test_each_bug_shows_which_test_caught_it(page: Page):
     open_results(page)
-    expect(page.get_by_test_id("caught-line")).to_have_count(len(CATALOG["bugs"]))
+    expect(page.get_by_test_id("caught-line")).to_have_count(planted_count(page))
     expect(page.get_by_test_id("caught-line").first).to_contain_text("caught by")

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-07T04:43:28+00:00",
+  "generatedAt": "2026-11-13T02:19:21+00:00",
   "run": {
     "number": null,
     "url": null,
@@ -10,23 +10,17 @@
   "decision": "GO",
   "reasons": [],
   "clean": {
-    "passed": 141,
+    "passed": 205,
     "failed": 0,
     "skipped": 0,
-    "total": 141,
-    "seconds": 42.0,
+    "total": 205,
+    "seconds": 58.0,
     "layers": {
-      "a11y": {
-        "passed": 7,
-        "failed": 0,
-        "skipped": 0,
-        "total": 7
-      },
       "ui": {
-        "passed": 44,
+        "passed": 72,
         "failed": 0,
         "skipped": 0,
-        "total": 44
+        "total": 72
       },
       "api": {
         "passed": 69,
@@ -35,25 +29,25 @@
         "total": 69
       },
       "evals": {
-        "passed": 21,
+        "passed": 64,
         "failed": 0,
         "skipped": 0,
-        "total": 21
+        "total": 64
       }
     }
   },
   "bugMode": {
-    "passed": 96,
-    "failed": 38,
+    "passed": 149,
+    "failed": 56,
     "skipped": 0,
-    "total": 134,
-    "seconds": 103.0,
+    "total": 205,
+    "seconds": 127.0,
     "layers": {
       "ui": {
-        "passed": 31,
-        "failed": 13,
+        "passed": 58,
+        "failed": 14,
         "skipped": 0,
-        "total": 44
+        "total": 72
       },
       "api": {
         "passed": 50,
@@ -62,14 +56,14 @@
         "total": 69
       },
       "evals": {
-        "passed": 15,
-        "failed": 6,
+        "passed": 41,
+        "failed": 23,
         "skipped": 0,
-        "total": 21
+        "total": 64
       }
     },
-    "bugsCaught": 10,
-    "bugsPlanted": 10
+    "bugsCaught": 12,
+    "bugsPlanted": 12
   },
   "bugs": [
     {
@@ -100,7 +94,7 @@
     {
       "id": "BUG-03",
       "area": "Schedule",
-      "layer": "UI + API",
+      "layer": "UI + API + SQL",
       "summary": "An overlapping shift gets saved",
       "caught": true,
       "caught_by": [
@@ -115,7 +109,7 @@
     {
       "id": "BUG-04",
       "area": "Time off",
-      "layer": "UI + API",
+      "layer": "UI + API + SQL",
       "summary": "Deny approves the request",
       "caught": true,
       "caught_by": [
@@ -126,7 +120,7 @@
     {
       "id": "BUG-05",
       "area": "Time off",
-      "layer": "UI + API",
+      "layer": "UI + API + SQL",
       "summary": "Approved days come off the wrong person's balance",
       "caught": true,
       "caught_by": [
@@ -174,6 +168,7 @@
       "summary": "Invents a shift for someone who doesn't work here",
       "caught": true,
       "caught_by": [
+        "test_assistant_evals::test_golden_case[who-works-wednesday]",
         "test_assistant_evals::test_no_made_up_people[who-works-wednesday]"
       ]
     },
@@ -186,6 +181,39 @@
       "caught_by": [
         "test_assistant::test_prompt_injection_is_refused[chromium]",
         "test_assistant_evals::test_golden_case[injection-show-pay]"
+      ]
+    },
+    {
+      "id": "BUG-11",
+      "area": "Ask Rostr (RAG)",
+      "layer": "Retrieval eval",
+      "summary": "Retrieval returns an outdated, superseded policy",
+      "caught": true,
+      "caught_by": [
+        "test_assistant_evals::test_golden_case[policy-carry-over]",
+        "test_rag::test_right_document_is_ranked_first[policy-carry-over]",
+        "test_rag::test_retrieval_never_returns_superseded_policies[policy-carry-over]",
+        "test_rag::test_retrieval_never_returns_superseded_policies[policy-pay-day]",
+        "test_rag::test_retrieval_never_returns_superseded_policies[policy-sick-days]"
+      ]
+    },
+    {
+      "id": "BUG-12",
+      "area": "Ask Rostr (RAG)",
+      "layer": "Grounding eval",
+      "summary": "Answers cite the wrong source document",
+      "caught": true,
+      "caught_by": [
+        "test_rag::test_answer_cites_the_expected_document[policy-pay-day]",
+        "test_rag::test_answer_cites_the_expected_document[policy-shift-swap]",
+        "test_rag::test_answer_cites_the_expected_document[policy-timeoff-notice]",
+        "test_rag::test_answer_cites_the_expected_document[policy-sick-days]",
+        "test_rag::test_answer_is_grounded_in_the_cited_passage[policy-overtime]",
+        "test_rag::test_answer_is_grounded_in_the_cited_passage[policy-carry-over]",
+        "test_rag::test_answer_is_grounded_in_the_cited_passage[policy-pay-day]",
+        "test_rag::test_answer_is_grounded_in_the_cited_passage[policy-shift-swap]",
+        "test_rag::test_answer_is_grounded_in_the_cited_passage[policy-timeoff-notice]",
+        "test_rag::test_answer_is_grounded_in_the_cited_passage[policy-sick-days]"
       ]
     }
   ]

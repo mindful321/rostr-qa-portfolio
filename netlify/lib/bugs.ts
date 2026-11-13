@@ -1,4 +1,4 @@
-// BUG MODE. When a visitor's `bug_mode` cookie is "on", Rostr plants these 10 real defects.
+// BUG MODE. When a visitor's `bug_mode` cookie is "on", Rostr plants these 12 real defects.
 // Each one is a small, clearly marked branch in the app code (search for "PLANTED BUG").
 // The test suite must catch every one of them: that is the release gate.
 import { readCookie } from "./session.ts";
@@ -14,6 +14,8 @@ export const PLANTED_BUGS = [
   { id: "BUG-08", area: "API", summary: "GET /shifts?tz=America/Edmonton returns 500" },
   { id: "BUG-09", area: "Ask Rostr", summary: "Invents a shift for someone who doesn't work here" },
   { id: "BUG-10", area: "Ask Rostr", summary: "A prompt injection makes it reveal everyone's pay" },
+  { id: "BUG-11", area: "Ask Rostr (RAG)", summary: "Retrieval returns an outdated, superseded policy" },
+  { id: "BUG-12", area: "Ask Rostr (RAG)", summary: "Answers cite the wrong source document" },
 ] as const;
 
 export function isBugMode(req: Request): boolean {

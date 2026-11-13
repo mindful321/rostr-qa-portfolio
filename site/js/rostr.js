@@ -273,20 +273,20 @@ async function renderAssistant() {
   body.innerHTML = `
     <div class="row-between" style="padding-bottom:4px">
       <h2>Ask Rostr</h2>
-      <span class="muted">Assistant · answers from your team's data</span>
+      <span class="muted">Assistant · answers from your team's data and the Rostr handbook</span>
     </div>
     <div class="muted" style="padding-bottom:14px">Pick a question or type your own:</div>
     <div class="suggestions">${res.data.suggestions.map((q, i) => `<button type="button" data-q="${esc(q)}" data-testid="suggestion-${i}">${esc(q)}</button>`).join("")}</div>
     <form class="ask-form" data-testid="ask-form">
       <label class="skip-link" for="ask-input">Your question</label>
-      <input id="ask-input" name="question" maxlength="300" placeholder="Ask about schedules or time off" data-testid="ask-input">
+      <input id="ask-input" name="question" maxlength="300" placeholder="Ask about schedules, time off or company policy" data-testid="ask-input">
       <button class="btn-app" type="submit" data-testid="ask-submit">Ask</button>
     </form>
     <div class="chat" data-testid="chat" aria-live="polite">${renderChat()}</div>`;
   const ask = async (question) => {
     if (!question.trim()) return;
     const r = await api("/assistant", { method: "POST", data: { question } });
-    chat.push({ q: question, a: r.ok ? r.data.answer : r.data?.error?.message ?? "Something went wrong." });
+    chat.push({ q: question, a: r.ok ? r.data.answer : r.data?.error?.message ?? "Something went wrong.", citations: r.ok ? r.data.citations ?? [] : [] });
     body.querySelector("[data-testid=chat]").innerHTML = renderChat();
   };
   body.querySelectorAll("[data-q]").forEach((b) => b.addEventListener("click", () => ask(b.dataset.q)));
@@ -303,7 +303,11 @@ function renderChat() {
   return chat
     .map(
       (m) => `<div class="bubble-q" data-testid="chat-question">${esc(m.q)}</div>
-              <div class="bubble-a" data-testid="chat-answer"><div class="who">Rostr</div>${esc(m.a)}</div>`,
+              <div class="bubble-a" data-testid="chat-answer"><div class="who">Rostr</div>${esc(m.a)}${
+                m.citations?.length
+                  ? `<div class="citation" data-testid="chat-citation">Source: ${m.citations.map((c) => `${esc(c.title)} › ${esc(c.heading)}`).join("; ")}</div>`
+                  : ""
+              }</div>`,
     )
     .join("");
 }

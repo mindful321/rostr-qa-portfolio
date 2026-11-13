@@ -1,0 +1,46 @@
+# Whole stack in containers: Postgres + the Rostr app + the test suite.
+#
+#   docker compose up --build --abort-on-container-exit --exit-code-from tests
+#
+# runs every test (including the SQL checks) against the app backed by a real Postgres,
+# then exits with the test suite's exit code. `docker compose up db rostr` just runs the app
+# on http://localhost:8888.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: rostr
+      POSTGRES_PASSWORD: rostr   # local test database only
+      POSTGRES_DB: rostr
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rostr -d rostr"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # Not called "app": Chrome treats any host ending in .app (and "app" itself) as HTTPS-only.
+  rostr:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://rostr:rostr@db:5432/rostr
+      ROSTR_SESSION_SECRET: local-docker-secret
+    ports:
+      - "8888:8888"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  tests:
+    build:
+      context: .
+      dockerfile: tests/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://rostr:rostr@db:5432/rostr
+    command: >
+      pytest -m "api or evals or db or ui or a11y" --browser chromium
+      --base-url http://rostr:8888 --junitxml=/results/clean.xml
+    volumes:
+      - ./test-results:/results
+    depends_on:
+      rostr:
+        condition: service_healthy

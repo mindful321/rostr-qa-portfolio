@@ -3,6 +3,7 @@
 // GET  /api/v1/auth/me                            -> 200 { user } | 401
 import { DEMO_USER } from "../lib/seed.ts";
 import { isBugMode } from "../lib/bugs.ts";
+import { createSession, isDbMode } from "../lib/db.ts";
 import { error, json, methodNotAllowed, readJson } from "../lib/http.ts";
 import { clearSessionCookie, newSession, readSession, sessionCookie } from "../lib/session.ts";
 
@@ -20,7 +21,9 @@ export default async (req: Request, context: { params?: Record<string, string> }
     if (email !== DEMO_USER.email || !passwordOk) {
       return error(401, "invalid_credentials", "Incorrect email or password.");
     }
-    const cookie = await sessionCookie(newSession(DEMO_USER.email), req);
+    const session = newSession(DEMO_USER.email);
+    if (isDbMode()) await createSession(session.sid, session.user);
+    const cookie = await sessionCookie(session, req);
     return json({ user: { email: DEMO_USER.email, name: DEMO_USER.name } }, 200, { "set-cookie": cookie });
   }
 

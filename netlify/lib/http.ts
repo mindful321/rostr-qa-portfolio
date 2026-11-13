@@ -1,6 +1,7 @@
 // Small helpers shared by all API functions.
 import { readSession, sessionCookie } from "./session.ts";
 import type { SessionState } from "./session.ts";
+import { isDbMode, loadState, saveChanges } from "./db.ts";
 
 export function json(data: unknown, status = 200, headers: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(data), {
@@ -29,13 +30,27 @@ export async function readJson(req: Request): Promise<Record<string, unknown> | 
   }
 }
 
-/** Runs `handler` for a signed-in visitor, or answers 401. Saves the session if the handler changed it. */
+/**
+ * Runs `handler` for a signed-in visitor, or answers 401, then saves whatever the handler changed.
+ * - Database mode (DATABASE_URL set): the cookie only identifies the session; shifts and decisions
+ *   are loaded from and written to Postgres.
+ * - Cookie mode (live demo): the changes travel in the signed cookie itself.
+ */
 export async function withSession(
   req: Request,
   handler: (state: SessionState) => Promise<Response> | Response,
 ): Promise<Response> {
   const state = await readSession(req);
   if (!state) return error(401, "unauthorized", "Sign in first.");
+
+  if (isDbMode()) {
+    if (!(await loadState(state))) return error(401, "unauthorized", "Session expired. Sign in again.");
+    const before: SessionState = structuredClone(state);
+    const res = await handler(state);
+    await saveChanges(before, state);
+    return res;
+  }
+
   const before = JSON.stringify(state);
   const res = await handler(state);
   if (JSON.stringify(state) !== before) res.headers.append("set-cookie", await sessionCookie(state, req));

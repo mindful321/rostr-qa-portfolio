@@ -80,8 +80,8 @@ function renderResults({ data, source }) {
       : `Showing a saved snapshot from ${esc(when)} (live results unavailable right now).`;
 }
 
-const GROUP_ORDER = ["Schedule & time off", "Prompt injection", "Off-topic & unknown"];
-const TAG_STYLE = { "prompt injection": "tag-red", "no hallucination": "tag-amber", correctness: "tag-green" };
+const GROUP_ORDER = ["Schedule & time off", "Handbook (RAG)", "Prompt injection", "Off-topic & unknown"];
+const TAG_STYLE = { "prompt injection": "tag-red", "outdated source": "tag-red", "no hallucination": "tag-amber", grounding: "tag-amber", correctness: "tag-green", retrieval: "tag-green" };
 
 function renderGolden(dataset) {
   const groups = GROUP_ORDER.map((g) => ({ name: g, cases: dataset.cases.filter((c) => c.group === g) }))

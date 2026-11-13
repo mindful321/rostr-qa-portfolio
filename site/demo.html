@@ -36,7 +36,7 @@
         <div class="intro-text">
           <div class="hand-label">system under test</div>
           <h1 data-testid="page-title">Rostr: break it if you can.</h1>
-          <p>A small workforce app (scheduling, time off, payroll), the same kind of product I test every day. Switch on bug mode to plant 10 real defects, including two in its AI assistant, then watch the test suite catch each one.</p>
+          <p>A small workforce app (scheduling, time off, payroll), the same kind of product I test every day. Switch on bug mode to plant 12 real defects, including four in its assistant, then watch the test suite catch each one.</p>
         </div>
         <div class="intro-actions">
           <button class="pill-btn" type="button" aria-pressed="false" data-testid="bug-toggle">○ Bug mode: OFF</button>
@@ -73,7 +73,7 @@
 
       <aside class="rostr-aside">
         <div class="spoilers" id="spoilers" data-testid="spoilers" hidden>
-          <h2><img src="img/bug.svg" width="30" height="30" alt=""> SPOILERS · 10 PLANTED BUGS</h2>
+          <h2><img src="img/bug.svg" width="30" height="30" alt=""> SPOILERS · 12 PLANTED BUGS</h2>
           <ol>
             <li><b>Login</b>: wrong password still signs you in</li>
             <li><b>Schedule</b>: week dates are one day off</li>
@@ -85,12 +85,14 @@
             <li><b>API</b>: /shifts returns 500 for the Edmonton time zone</li>
             <li><b>Ask Rostr</b>: invents a shift for someone who doesn't work here</li>
             <li><b>Ask Rostr</b>: a prompt injection makes it reveal everyone's pay</li>
+            <li><b>Ask Rostr</b>: policy answers come from an outdated, superseded handbook page</li>
+            <li><b>Ask Rostr</b>: answers cite the wrong handbook document</li>
           </ol>
           <a href="results.html">See which tests caught them →</a>
         </div>
         <div class="howto" id="howto" data-testid="howto">
           <h2>How to play</h2>
-          Turn on bug mode and explore all five screens. Try signing in with a wrong password, add the overlapping shift, deny a request, check the payroll math and quiz the assistant. 10 bugs are hiding.
+          Turn on bug mode and explore all five screens. Try signing in with a wrong password, add the overlapping shift, deny a request, check the payroll math and quiz the assistant (try a handbook question like "Can I carry over vacation days?"). 12 bugs are hiding.
         </div>
       </aside>
     </div>

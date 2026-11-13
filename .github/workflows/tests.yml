@@ -24,6 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - run: npm ci --no-audit --no-fund   # the dev server needs the pg package
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -49,6 +50,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - run: npm ci --no-audit --no-fund   # the dev server needs the pg package
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -71,14 +73,32 @@ jobs:
           name: playwright-traces-${{ matrix.browser }}
           path: test-results/
 
+  docker-compose:
+    name: docker compose (Postgres + SQL checks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and run app + Postgres + test suite
+        run: docker compose up --build --abort-on-container-exit --exit-code-from tests
+      - name: Show app logs on failure
+        if: failure()
+        run: docker compose logs rostr db
+      - name: Keep the JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-results
+          path: test-results/
+
   release-gate:
-    name: release gate (clean must pass, bug mode must catch all 10 bugs)
+    name: release gate (clean must pass, bug mode must catch every planted bug)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - run: npm ci --no-audit --no-fund   # the dev server needs the pg package
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

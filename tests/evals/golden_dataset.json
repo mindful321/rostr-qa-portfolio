@@ -235,6 +235,151 @@
       "tags": [
         "stays on topic"
       ]
+    },
+    {
+      "id": "policy-overtime",
+      "question": "How is overtime paid?",
+      "intent": "policy",
+      "expected_doc": "overtime-policy",
+      "must_include": [
+        "1.5 times",
+        "over 40 hours"
+      ],
+      "must_not_include": [
+        "$"
+      ],
+      "check": "retrieval, grounding",
+      "group": "Handbook (RAG)",
+      "expected": "1.5× the regular rate after 40 hours (Overtime policy)",
+      "tags": [
+        "retrieval",
+        "grounding"
+      ]
+    },
+    {
+      "id": "policy-carry-over",
+      "question": "Can I carry over unused vacation days?",
+      "intent": "policy",
+      "expected_doc": "pto-policy-2026",
+      "must_include": [
+        "up to 3 unused vacation days",
+        "March 31"
+      ],
+      "must_not_include": [
+        "up to 5",
+        "never expire"
+      ],
+      "check": "retrieval, no outdated policy",
+      "group": "Handbook (RAG)",
+      "expected": "Up to 3 days, used by March 31 (2026 policy, not the old 2024 one)",
+      "tags": [
+        "retrieval",
+        "outdated source"
+      ]
+    },
+    {
+      "id": "policy-pay-day",
+      "question": "When is pay day?",
+      "intent": "policy",
+      "expected_doc": "timesheets",
+      "must_include": [
+        "Wednesday after the pay week ends"
+      ],
+      "must_not_include": [
+        "$"
+      ],
+      "check": "retrieval, not mistaken for a pay request",
+      "group": "Handbook (RAG)",
+      "expected": "The Wednesday after the pay week (Timesheets and pay day)",
+      "tags": [
+        "retrieval",
+        "correctness"
+      ]
+    },
+    {
+      "id": "policy-shift-swap",
+      "question": "How do I swap a shift?",
+      "intent": "policy",
+      "expected_doc": "shift-swaps",
+      "must_include": [
+        "at least 24 hours before"
+      ],
+      "must_not_include": [],
+      "check": "retrieval, grounding",
+      "group": "Handbook (RAG)",
+      "expected": "Both agree + manager approval 24 h before (Shift swaps)",
+      "tags": [
+        "retrieval",
+        "grounding"
+      ]
+    },
+    {
+      "id": "policy-timeoff-notice",
+      "question": "How much notice do I need for time off?",
+      "intent": "policy",
+      "expected_doc": "timeoff-requests",
+      "must_include": [
+        "14 days in advance"
+      ],
+      "must_not_include": [],
+      "check": "retrieval among similar documents",
+      "group": "Handbook (RAG)",
+      "expected": "14 days in advance (Requesting time off)",
+      "tags": [
+        "retrieval"
+      ]
+    },
+    {
+      "id": "policy-lunch-break",
+      "question": "Do I get a lunch break?",
+      "intent": "policy",
+      "expected_doc": "breaks",
+      "must_include": [
+        "30-minute meal break"
+      ],
+      "must_not_include": [],
+      "check": "retrieval with a synonym (lunch = meal)",
+      "group": "Handbook (RAG)",
+      "expected": "30-minute unpaid meal break after 5 hours (Breaks)",
+      "tags": [
+        "retrieval",
+        "synonyms"
+      ]
+    },
+    {
+      "id": "policy-sick-days",
+      "question": "How many sick days do I get?",
+      "intent": "policy",
+      "expected_doc": "sick-leave",
+      "must_include": [
+        "5 paid sick days"
+      ],
+      "must_not_include": [],
+      "check": "retrieval, grounding",
+      "group": "Handbook (RAG)",
+      "expected": "5 paid sick days a year (Sick leave)",
+      "tags": [
+        "retrieval",
+        "grounding"
+      ]
+    },
+    {
+      "id": "policy-not-in-handbook",
+      "question": "What's the dress code?",
+      "intent": "help",
+      "must_include": [
+        "I can answer questions"
+      ],
+      "must_not_include": [
+        "Source",
+        "dress code is"
+      ],
+      "check": "no answer when the handbook doesn't cover it",
+      "group": "Off-topic & unknown",
+      "expected": "Says it can't answer; no made-up policy, no citation",
+      "tags": [
+        "no hallucination"
+      ]
     }
   ]
 }
